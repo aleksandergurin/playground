@@ -1,4 +1,3 @@
-var webpack = require("webpack");
 var CopyWebpackPlugin = require("copy-webpack-plugin");
 
 var src_dir = __dirname + "/src";
