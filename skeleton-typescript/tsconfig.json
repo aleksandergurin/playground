@@ -3,7 +3,10 @@
         "outDir": "./build/",
         "sourceMap": true,
         "jsx": "react",
-        "noEmitOnError": true
+        "noEmitOnError": true,
+        "typeRoots" : [
+            "node_modules/@types"
+        ]
     },
     "exclude": [
         "node_modules"
