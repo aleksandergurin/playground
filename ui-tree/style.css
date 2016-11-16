@@ -1,0 +1,88 @@
+.b-tree__node {
+    position: relative;
+    padding-left: 1.2em;
+}
+
+.b-tree__node:before {
+    /* vertical line */
+    content: "";
+    display: block;
+    position: absolute;
+    width: 0;
+    top: 0;
+    left: 6px;
+    bottom: -10px;
+    border-left: 1px solid lightblue;
+}
+
+.b-tree__node:last-child:before {
+    border-left: 0;
+}
+
+.b-tree__node > .b-tree_branch:before {
+    /* horizontal line */
+    content: "";
+    display: block;
+    position: absolute;
+    width: 10px;
+    height: 0;
+    top: 10px;
+    left: 6px;
+    border-top: 1px solid lightblue;
+}
+
+.b-tree__node-content {
+}
+
+.b-tree__node-toggle {
+    margin-right: 5px;
+}
+
+.b-tree__node-toggle_leaf {
+    margin-right: 10px;
+}
+.b-tree__node-toggle_leaf:before {
+    content: "";
+    display: inline-block;
+    position: absolute;
+    width: 10px;
+    height: 0;
+    top: 10px;
+    left: 16px;
+    border-top: 1px solid lightblue;
+}
+
+.b-tree__node-toggle:before {
+    content: "";
+    display: inline-block;
+    width: 12px;
+    height: 12px;
+    text-align: center;
+    vertical-align: middle;
+    line-height: 10px;
+    font-size: 10px;
+    cursor: pointer;
+}
+
+.b-tree__node-toggle_collapsed:before {
+    content: "+";
+    border: 1px solid #ddd;
+}
+
+.b-tree__node-toggle_expanded:before {
+    content: "-";
+    border: 1px solid #ddd;
+}
+
+.b-tree__node-checkbox {
+    vertical-align: middle;
+}
+
+.b-tree__node-payload {
+    display: inline-block;
+    vertical-align: middle;
+}
+
+.b-tree__node-checkbox-wrapper {
+    vertical-align: top;
+}
