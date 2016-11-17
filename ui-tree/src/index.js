@@ -177,9 +177,11 @@ function initUiTree(domElem, initialTree) {
     const store = createStore(
         treeReducer,
         {
-            originalTreeCache: null,
-            tree: initialTree,
-            selectedItems: [],
+            treeState: {
+                originalTreeCache: null,
+                tree: initialTree,
+                selectedItems: [],
+            }
         }
     );
 
@@ -191,14 +193,14 @@ function initUiTree(domElem, initialTree) {
             />
 
             <Tree
-                {...store.getState().tree}
+                {...store.getState().treeState.tree}
                 dataRenderer={renderData}
                 onNodeClick={nodeId => store.dispatch(toggleCollapseExpand(nodeId))}
                 onNodeSelect={nodeId => store.dispatch(toggleSelectDeselect(nodeId))}
             />
 
             <SelectedItems
-                items={store.getState().selectedItems}
+                {...store.getState().treeState}
                 onClose={nodeId => store.dispatch(toggleSelectDeselect(nodeId))}
             />
         </div>,

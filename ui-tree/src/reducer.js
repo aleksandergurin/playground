@@ -205,23 +205,34 @@ function filterTreeNodes(state, action) {
 }
 
 const defaultState = {
-    originalTreeCache: null,
-    tree: {
-        id: 0,
-        data: null,
-        children: [],
-    },
-    selectedItems: [],
+    treeState: {
+        originalTreeCache: null,
+        tree: {
+            id: 0,
+            data: null,
+            children: [],
+        },
+        selectedItems: [],
+    }
 };
 
 export function treeReducer(state = defaultState, action) {
     switch (action.type) {
         case TOGGLE_COLLAPSE_EXPAND:
-            return toggleCollapseTreeNode(state, action);
+            return {
+                ...state,
+                treeState: toggleCollapseTreeNode(state.treeState, action)
+            };
         case TOGGLE_SELECT_DESELECT:
-            return toggleSelectionOfTreeNode(state, action);
+            return {
+                ...state,
+                treeState: toggleSelectionOfTreeNode(state.treeState, action)
+            };
         case FILTER_TREE_NODES:
-            return filterTreeNodes(state, action);
+            return {
+                ...state,
+                treeState: filterTreeNodes(state.treeState, action),
+            };
         default:
             return state;
     }

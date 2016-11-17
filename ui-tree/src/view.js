@@ -8,10 +8,10 @@ const noop = () => console.warn("Something hasn't been initialized.");
 export function Tree(props) {
     const {
         id,
-        collapsed = false,
-        selected = NODE_ENUM.NODE_DESELECTED,
         data = null,
         utilData = {},
+        collapsed = false,
+        selected = NODE_ENUM.NODE_DESELECTED,
         children = [],
         onNodeClick = noop,
         onNodeSelect = noop,
@@ -81,10 +81,10 @@ export function Tree(props) {
 
 
 export function SelectedItems(props) {
-    const {items = [], onClose} = props;
+    const {selectedItems = [], onClose} = props;
     return (
         <div>
-            {items.map((i, num) =>
+            {selectedItems.map((i, num) =>
                 <div key={num}>
                     {i.data.title} <span onClick={() => onClose(i.id)}>X</span>
                 </div>
@@ -93,6 +93,6 @@ export function SelectedItems(props) {
     );
 }
 SelectedItems.propTypes = {
-    items: PropTypes.array.isRequired,
+    selectedItems: PropTypes.array.isRequired,
     onClose: PropTypes.func.isRequired,
 };
