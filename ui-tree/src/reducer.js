@@ -132,39 +132,41 @@ function toggleSelectionOfTreeNode(state, action) {
         return {...toggleSelectionRecursive(node, nodeId)};
     }
 
-    return {...state, tree: toggleSelectionInner(state.tree, action.nodeId)};
+    function getSelectedItems(tree) {
+        const res = [];
+
+        const getSelectedRecursive = (node) => {
+            if (node.data && node.selected === NODE_ENUM.NODE_SELECTED) {
+                return res.push({
+                    id: node.id,
+                    data: node.data,
+                });
+            }
+            const {children = []} = node;
+            children.forEach(getSelectedRecursive);
+        };
+        getSelectedRecursive(tree);
+        return res;
+    }
+
+    const tree = toggleSelectionInner(state.tree, action.nodeId);
+    const selectedItems = getSelectedItems(tree);
+
+    return {...state, tree, selectedItems};
 }
 
 
-function comparator(x, y) {
-    if (typeof x === 'string' && typeof y === 'string') {
-        let markStart = x.toLowerCase().indexOf(y.toLowerCase());
-        let markEnd = markStart + y.length;
-        if (markStart !== -1) {
-            return {
-                contain: true,
-                markStart,
-                markEnd,
-            };
-        }
-    }
-
-    return {
-        contain: false,
-    }
-}
+const defaultComparator = (nodeData, inputData) => ({contain: false});
 
 function filterTreeNodes(state, action) {
+    const {comparator = defaultComparator()} = action;
+
     function filterTree(node, data) {
         const {children = []} = node;
 
-        const {contain, markStart, markEnd} = comparator(node.data, data);
+        const {contain, utilData} = comparator(node.data, data);
         if (contain) {
-            return {
-                ...node,
-                markStart,
-                markEnd,
-            }
+            return {...node, utilData}
         } else if (children.length === 0) {
             return null;
         }
@@ -199,19 +201,17 @@ function filterTreeNodes(state, action) {
     return res;
 }
 
-
-export const treeReducer = (
-    state = {
-        originalTreeCache: null,
-        tree: {
-            id: 0,
-            data: null,
-            children: [],
-        },
-        selectedItems: [],
+const defaultState = {
+    originalTreeCache: null,
+    tree: {
+        id: 0,
+        data: null,
+        children: [],
     },
-    action
-) => {
+    selectedItems: [],
+};
+
+export function treeReducer(state = defaultState, action) {
     switch (action.type) {
         case TOGGLE_COLLAPSE_EXPAND:
             return toggleCollapseTreeNode(state, action);
@@ -222,4 +222,4 @@ export const treeReducer = (
         default:
             return state;
     }
-};
+}

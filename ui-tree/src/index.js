@@ -12,6 +12,7 @@ import {
 import {treeReducer} from './reducer';
 
 
+// todo: add selected default values during initialisation
 const treeFromServe = {
     id: '1',
     data: null,
@@ -96,6 +97,24 @@ const treeFromServe = {
     ]
 };
 
+function comparator(x, y) {
+    if (typeof x === 'string' && typeof y === 'string') {
+        let start = x.toLowerCase().indexOf(y.toLowerCase());
+        let end = start + y.length;
+
+        if (start !== -1) {
+            return {
+                contain: true,
+                utilData: {start, end}
+            };
+        }
+    }
+
+    return {
+        contain: false,
+    }
+}
+
 function initUiTree(initialTree) {
 
     const store = createStore(
@@ -111,7 +130,7 @@ function initUiTree(initialTree) {
         <div>
             <input
                 type="text"
-                onChange={(e) => store.dispatch(filterTreeNodes(e.target.value))}
+                onChange={(e) => store.dispatch(filterTreeNodes(e.target.value, comparator))}
             />
             <Tree
                 {...store.getState().tree}

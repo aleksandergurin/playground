@@ -10,8 +10,7 @@ export const Tree = (props) => {
         id,
         collapsed = false,
         selected = NODE_ENUM.NODE_DESELECTED,
-        markStart = null,
-        markEnd = null,
+        utilData = {},
         data = null,
         children = [],
         onNodeClick = noop,
@@ -59,7 +58,7 @@ export const Tree = (props) => {
                             <label htmlFor={id}/>
                         </span>
                         <span className="b-tree__node-content">
-                            {mark(data, markStart, markEnd)}
+                            {renderData(data, utilData)}
                         </span>
                     </div>
                 </div>
@@ -78,17 +77,19 @@ export const Tree = (props) => {
 };
 
 
-const mark = (strData, start, end) => {
+const renderData = (data, utilData = {}) => {
+    const {start, end} = utilData;
+
     if (Number.isInteger(start) && Number.isInteger(end)) {
         return (
             <span>
-                {strData.substring(0, start)}
+                {data.substring(0, start)}
                 <mark>
-                    {strData.substring(start, end)}
+                    {data.substring(start, end)}
                 </mark>
-                {strData.substring(end)}
+                {data.substring(end)}
             </span>
         );
     }
-    return <span>{strData}</span>
+    return <span>{data}</span>
 };
