@@ -17,101 +17,128 @@ function toggleCollapseNode(node, nodeId) {
 }
 
 
-function toggleSelectNode(node, nodeId, hasSelectedParent = false) {
-    console.log(nodeId);
+function toggleSelectNode(node, nodeId) {
 
-    function setNodesToHasSelectedParent(node) {
+    function setAll(node, selected) {
         const {children = []} = node;
         return {
             ...node,
-            selected: NODE_ENUM.NODE_HAS_SELECTED_PARENT,
-            children: children.map(n => setNodesToHasSelectedParent(n)),
+            selected,
+            children: children.map(n => setAll(n, selected)),
         }
     }
-    // todo: fix this function, it is incorrect
 
-    let selected = node.selected || NODE_ENUM.NODE_DESELECTED;
-    if (node.id === nodeId) {
-        switch(selected) {
-            case NODE_ENUM.NODE_HAS_SELECTED_CHILDREN:
-                // fallthrough
-            case NODE_ENUM.NODE_DESELECTED:
+    function processOneNode(node, id) {
+        let selected = node.selected || NODE_ENUM.NODE_DESELECTED;
+        if (node.id === id) {
+            switch (selected) {
+                case NODE_ENUM.NODE_HAS_SELECTED_CHILDREN: // fallthrough
+                case NODE_ENUM.NODE_DESELECTED:
+                    return {
+                        ...setAll(node, NODE_ENUM.NODE_HAS_SELECTED_PARENT),
+                        selected: NODE_ENUM.NODE_SELECTED,
+                    };
+                case NODE_ENUM.NODE_HAS_SELECTED_PARENT: // fallthrough
+                case NODE_ENUM.NODE_SELECTED:
+                    return {
+                        ...setAll(node, NODE_ENUM.NODE_DESELECTED),
+                    };
+                default:
+                    return {...node};
+            }
+        }
+
+        const {children = []} = node;
+        const newChildren = children.map(n => processOneNode(n, nodeId));
+
+        if (newChildren.length > 0) {
+            if (newChildren.every(n => n.selected === NODE_ENUM.NODE_SELECTED)) {
                 return {
-                    ...setNodesToHasSelectedParent(node),
+                    ...node,
                     selected: NODE_ENUM.NODE_SELECTED,
-                };
-            default:
-                return { ...node };
+                    children: newChildren.map(n => ({...n, selected: NODE_ENUM.NODE_HAS_SELECTED_PARENT})),
+                }
+            } else if (newChildren.every(
+                    n => n.selected === NODE_ENUM.NODE_DESELECTED || n.selected === undefined
+                )
+            ) {
+                return {
+                    ...node,
+                    selected: NODE_ENUM.NODE_DESELECTED,
+                    children: newChildren,
+                }
+            } else if (
+                newChildren.some(
+                    n => (
+                        n.selected === NODE_ENUM.NODE_SELECTED ||
+                        n.selected === NODE_ENUM.NODE_HAS_SELECTED_CHILDREN
+                    )
+                )
+            ) {
+                return {
+                    ...node,
+                    selected: NODE_ENUM.NODE_HAS_SELECTED_CHILDREN,
+                    children: newChildren.map(n => {
+                        if (n.selected === NODE_ENUM.NODE_HAS_SELECTED_PARENT) {
+                            return {...n, selected: NODE_ENUM.NODE_SELECTED};
+                        } else {
+                            return {...n}
+                        }
+                    }),
+                }
+            } else if (
+                newChildren.some(n => n.selected === NODE_ENUM.NODE_HAS_SELECTED_PARENT) &&
+                newChildren.some(n => n.selected === NODE_ENUM.NODE_DESELECTED || n.selected === undefined)
+            ) {
+                return {
+                    ...node,
+                    selected: NODE_ENUM.NODE_HAS_SELECTED_CHILDREN,
+                    children: newChildren.map(n => {
+                        if (n.selected === NODE_ENUM.NODE_HAS_SELECTED_PARENT) {
+                            return {...n, selected: NODE_ENUM.NODE_SELECTED};
+                        } else {
+                            return {...n}
+                        }
+                    }),
+                }
+            }
         }
+
+        return {...node, children: newChildren};
     }
 
-
-
-    // todo: change ....
-    function processChildren(children = [], nodeId, hasSelectedParent) {
-        if (hasSelectedParent) {
-            return children.map(n => ({
-                ...toggleSelectNode(n, nodeId, hasSelectedParent),
-                selected: NODE_ENUM.NODE_HAS_SELECTED_PARENT,
-            }));
-        }
-
-        return children.map(n => ({
-            ...toggleSelectNode(n, nodeId, hasSelectedParent),
-            // selected: NODE_ENUM.NODE_DESELECTED,
-        }));
-    }
-
-    let children = processChildren(
-        node.children, nodeId,
-        (
-            hasSelectedParent ||
-            (node.id === nodeId && node.selected !== NODE_ENUM.NODE_SELECTED)
-        )
-    );
-    // let selected = node.selected || NODE_ENUM.NODE_DESELECTED;
-
-    if (children.some(
-        node => (
-            node.selected === NODE_ENUM.NODE_SELECTED ||
-            node.selected === NODE_ENUM.NODE_HAS_SELECTED_CHILDREN
-        )
-    )) {
-        selected = NODE_ENUM.NODE_HAS_SELECTED_CHILDREN;
-    } else if (hasSelectedParent) {
-        selected = NODE_ENUM.NODE_HAS_SELECTED_CHILDREN;
-    } else if (nodeId === node.id) {
-        switch (selected) {
-            case NODE_ENUM.NODE_SELECTED:
-                selected = NODE_ENUM.NODE_DESELECTED;
-                break;
-            case NODE_ENUM.NODE_DESELECTED:
-                selected = NODE_ENUM.NODE_SELECTED;
-                break;
-            default:
-                break
-        }
-    }
-
-    return { ...node, selected, children };
+    return {...processOneNode(node, nodeId)};
 }
 
 
-function eq(x, y) {
-    return (
-        typeof x === 'string' &&
-        typeof y === 'string' &&
-        x.indexOf(y) !== -1
-    );
+function comparator(x, y) {
+    if (typeof x === 'string' && typeof y === 'string') {
+        let markStart = x.toLowerCase().indexOf(y.toLowerCase());
+        let markEnd = markStart + y.length;
+        if (markStart !== -1) {
+            return {
+                contain: true,
+                markStart,
+                markEnd,
+            };
+        }
+    }
+
+    return {
+        contain: false,
+    }
 }
 
 
 function filterTree(node, data) {
     const {children = []} = node;
 
-    if (eq(node.data, data)) {
+    const {contain, markStart, markEnd} = comparator(node.data, data);
+    if (contain) {
         return {
             ...node,
+            markStart,
+            markEnd,
         }
     } else if (children.length === 0) {
         return null;

@@ -10,6 +10,8 @@ export const Tree = (props) => {
         id,
         collapsed = false,
         selected = NODE_ENUM.NODE_DESELECTED,
+        markStart = null,
+        markEnd = null,
         data = null,
         children = [],
         onNodeClick = noop,
@@ -43,29 +45,23 @@ export const Tree = (props) => {
     if (data) {
         return (
             <div className="b-tree__node">
-                <div>
+                <div className="b-tree__node-wrapper">
                     <span className={toggleClass} onClick={() => onNodeClick(id)}/>
-                    <table className="b-tree__node-payload">
-                        <tbody>
-                            <tr>
-                                <td className="b-tree__node-checkbox-wrapper">
-                                    <input
-                                        id={id}
-                                        className={selectClass}
-                                        checked={(selected === NODE_ENUM.NODE_SELECTED)}
-                                        type="checkbox"
-                                        onClick={() => onNodeSelect(id)}
-                                    />
-                                    <label htmlFor={id}/>
-                                </td>
-                                <td>
-                                    <span className="b-tree__node-content">
-                                        {data}
-                                    </span>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
+                    <div className="b-tree__node-payload">
+                        <span className="b-tree__node-checkbox-wrapper">
+                            <input
+                                id={id}
+                                className={selectClass}
+                                checked={(selected === NODE_ENUM.NODE_SELECTED)}
+                                type="checkbox"
+                                onChange={() => onNodeSelect(id)}
+                            />
+                            <label htmlFor={id}/>
+                        </span>
+                        <span className="b-tree__node-content">
+                            {mark(data, markStart, markEnd)}
+                        </span>
+                    </div>
                 </div>
                 <div className="b-tree_branch">
                     {!collapsed ? branch(children) : null}
@@ -79,4 +75,20 @@ export const Tree = (props) => {
             {branch(children)}
         </div>
     );
+};
+
+
+const mark = (strData, start, end) => {
+    if (Number.isInteger(start) && Number.isInteger(end)) {
+        return (
+            <span>
+                {strData.substring(0, start)}
+                <mark>
+                    {strData.substring(start, end)}
+                </mark>
+                {strData.substring(end)}
+            </span>
+        );
+    }
+    return <span>{strData}</span>
 };

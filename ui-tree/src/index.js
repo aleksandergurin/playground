@@ -15,56 +15,83 @@ const storage = {
 
     tree: {
         id: '1',
-        data: 'A',
+        data: 'First level',
         collapsed: false,
         children: [
             {
                 id: '1.1',
-                data: 'AA',
+                data: 'Second level A',
                 collapsed: false,
                 children: [
                     {
-                        id: '1.1.1',
-                        data: 'AAA',
-                        collapsed: false,
-                    },
-                    {
                         id: '1.1.2',
-                        data: 'BBB',
+                        data: 'Third level A',
                         collapsed: false,
                         children: [
                             {
                                 id: '1.1.1.1',
-                                data: 'XX',
+                                data: 'Forth level A',
                                 collapsed: false,
+                                children: [
+                                    {
+                                        id: '1.1.1.1.1',
+                                        data: 'Fifth level A',
+                                        collapsed: false,
+                                    },
+                                    {
+                                        id: '1.1.1.1.2',
+                                        data: 'Fifth level B',
+                                        collapsed: false,
+                                    },
+                                    {
+                                        id: '1.1.1.1.3',
+                                        data: 'Fifth level C',
+                                        collapsed: false,
+                                    },
+                                    {
+                                        id: '1.1.1.1.4',
+                                        data: 'Fifth level D',
+                                        collapsed: false,
+                                    },
+                                ]
                             },
                             {
                                 id: '1.1.1.2',
-                                data: 'X',
+                                data: 'Forth level B',
                                 collapsed: false,
                             },
                             {
                                 id: '1.1.1.3',
-                                data: 'YYYY',
+                                data: 'Forth level C',
                                 collapsed: false,
                             },
                         ],
                     },
                     {
                         id: '1.1.3',
-                        data: 'CCC',
+                        data: 'Third level B',
+                        collapsed: false,
+                    },
+                    {
+                        id: '1.1.4',
+                        data: 'Third level C',
+                        collapsed: false,
+                    },
+                    {
+                        id: '1.1.5',
+                        data: 'Third level D',
                         collapsed: false,
                     },
                 ]
             },
             {
                 id: '1.2',
-                data: 'BB',
+                data: 'Second level B',
                 collapsed: false,
             },
             {
                 id: '1.3',
-                data: 'CC',
+                data: 'Second level C',
                 collapsed: false,
             },
         ]
