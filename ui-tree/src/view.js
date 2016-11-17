@@ -5,17 +5,19 @@ import * as NODE_ENUM from './enums';
 
 const noop = () => console.warn("Something hasn't been initialized.");
 
-export const Tree = (props) => {
+export function Tree(props) {
     const {
         id,
         collapsed = false,
         selected = NODE_ENUM.NODE_DESELECTED,
-        utilData = {},
         data = null,
+        utilData = {},
         children = [],
         onNodeClick = noop,
         onNodeSelect = noop,
+        dataRenderer = (dt, utilDt) => null,
     } = props;
+
     const isLeaf = !Boolean(children.length);
 
     const branch = (childrenNodes) => (
@@ -24,6 +26,7 @@ export const Tree = (props) => {
                 <Tree
                     key={n}
                     {...node}
+                    dataRenderer={dataRenderer}
                     onNodeClick={onNodeClick}
                     onNodeSelect={onNodeSelect}
                 />
@@ -58,7 +61,7 @@ export const Tree = (props) => {
                             <label htmlFor={id}/>
                         </span>
                         <span className="b-tree__node-content">
-                            {renderData(data, utilData)}
+                            {dataRenderer(data, utilData)}
                         </span>
                     </div>
                 </div>
@@ -74,22 +77,19 @@ export const Tree = (props) => {
             {branch(children)}
         </div>
     );
-};
+}
 
 
-const renderData = (data, utilData = {}) => {
-    const {start, end} = utilData;
-
-    if (Number.isInteger(start) && Number.isInteger(end)) {
-        return (
-            <span>
-                {data.substring(0, start)}
-                <mark>
-                    {data.substring(start, end)}
-                </mark>
-                {data.substring(end)}
-            </span>
-        );
-    }
-    return <span>{data}</span>
+export function SelectedItems(props) {
+    const {items = []} = props;
+    return (
+        <div>
+            {items.map((i, num) =>
+                <div key={num}>{i.data.title}</div>
+            )}
+        </div>
+    );
+}
+SelectedItems.propTypes = {
+    items: PropTypes.array.isRequired,
 };

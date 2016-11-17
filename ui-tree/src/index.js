@@ -2,7 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import {createStore} from 'redux';
 
-import {Tree} from './view';
+import {Tree, SelectedItems} from './view';
 import {
     toggleCollapseExpand,
     toggleSelectDeselect,
@@ -15,107 +15,164 @@ import {treeReducer} from './reducer';
 // todo: add selected default values during initialisation
 const treeFromServe = {
     id: '1',
-    data: null,
+    data: {code: '1', title: 'First level'},
     collapsed: false,
     children: [
         {
             id: '1.1',
-            data: 'Second level A',
+            data: {code: '11', title: 'Second level A'},
             collapsed: false,
             children: [
                 {
                     id: '1.1.2',
-                    data: 'Third level A',
+                    data: {code: '112', title: 'Third level A'},
                     collapsed: false,
                     children: [
                         {
                             id: '1.1.1.1',
-                            data: 'Forth level A',
+                            data: {code: '1111', title: 'Forth level A'},
                             collapsed: false,
                             children: [
                                 {
                                     id: '1.1.1.1.1',
-                                    data: 'Fifth level A',
+                                    data: {code: '11111', title: 'Fifth level A'},
                                     collapsed: false,
                                 },
                                 {
                                     id: '1.1.1.1.2',
-                                    data: 'Fifth level B',
+                                    data: {code: '11112', title: 'Fifth level B'},
                                     collapsed: false,
                                 },
                                 {
                                     id: '1.1.1.1.3',
-                                    data: 'Fifth level C',
+                                    data: {code: '11113', title: 'Fifth level C'},
                                     collapsed: false,
                                 },
                                 {
                                     id: '1.1.1.1.4',
-                                    data: 'Fifth level D',
+                                    data: {code: '11114', title: 'Fifth level D'},
                                     collapsed: false,
                                 },
                             ]
                         },
                         {
                             id: '1.1.1.2',
-                            data: 'Forth level B',
+                            data: {code: '1112', title: 'Forth level B'},
                             collapsed: false,
                         },
                         {
                             id: '1.1.1.3',
-                            data: 'Forth level C',
+                            data: {code: '1113', title: 'Forth level C'},
                             collapsed: false,
                         },
                     ],
                 },
                 {
                     id: '1.1.3',
-                    data: 'Third level B',
+                    data: {code: '113', title: 'Third level B'},
                     collapsed: false,
                 },
                 {
                     id: '1.1.4',
-                    data: 'Third level C',
+                    data: {code: '114', title: 'Third level C'},
                     collapsed: false,
                 },
                 {
                     id: '1.1.5',
-                    data: 'Third level D',
+                    data: {code: '115', title: 'Third level D'},
                     collapsed: false,
                 },
             ]
         },
         {
             id: '1.2',
-            data: 'Second level B',
+            data: {code: '12', title: 'Second level B'},
             collapsed: false,
         },
         {
             id: '1.3',
-            data: 'Second level C',
+            data: {code: '13', title: 'Second level C'},
             collapsed: false,
         },
     ]
 };
 
-function comparator(x, y) {
-    if (typeof x === 'string' && typeof y === 'string') {
-        let start = x.toLowerCase().indexOf(y.toLowerCase());
-        let end = start + y.length;
 
+// todo: consider to move comparator and renderData into separate file
+function comparator(dataItem, userInput) {
+    let res = {contain: false, utilData: {}};
+
+    const inputIsCode = (input) => /^(\d{1,8})-?\d?$/.test(input);
+    const foundSubstring = (base, subStr) => {
+        let start = base.toLowerCase().indexOf(subStr.toLowerCase());
+        let end = start + subStr.length;
         if (start !== -1) {
-            return {
-                contain: true,
-                utilData: {start, end}
+            return {contain: true, start, end};
+        }
+        return {contain: false}
+    };
+
+    // Search by code
+    if (typeof userInput === 'string' && inputIsCode(userInput.trim())) {
+        const {contain, start, end} = foundSubstring(dataItem.code, userInput.trim());
+        if (contain) {
+            res = {
+                ...res,
+                contain,
+                utilData: {
+                    ...res.utilData,
+                    markCodeStart: start,
+                    markCodeEnd: end
+                }
             };
         }
     }
 
-    return {
-        contain: false,
+    // Search by title
+    const {title} = dataItem;
+    if (typeof title === 'string' && typeof userInput === 'string') {
+        const {contain, start, end} = foundSubstring(dataItem.title, userInput);
+        if (contain) {
+            res = {
+                ...res,
+                contain,
+                utilData: {
+                    ...res.utilData,
+                    markTitleStart: start,
+                    markTitleEnd: end
+                }
+            };
+        }
     }
+
+    return res;
 }
 
-function initUiTree(initialTree) {
+function renderData(data, utilData = {}) {
+    const mark = (str, start, end) => (
+        <span>
+            {str.substring(0, start)}
+            <mark>{str.substring(start, end)}</mark>
+            {str.substring(end)}
+        </span>
+    );
+    const {markCodeStart, markCodeEnd} = utilData;
+    const {markTitleStart, markTitleEnd} = utilData;
+    let {code = 'XXX', title = '---'} = data;
+
+    if (Number.isInteger(markCodeStart) && Number.isInteger(markCodeEnd)) {
+        code = mark(code, markCodeStart, markCodeEnd);
+    }
+
+    if (Number.isInteger(markTitleStart) && Number.isInteger(markTitleEnd)) {
+        title = mark(title, markTitleStart, markTitleEnd);
+    }
+
+    return <span><b>{code}</b> - {title}</span>
+}
+
+
+function initUiTree(domElem, initialTree) {
 
     const store = createStore(
         treeReducer,
@@ -132,17 +189,23 @@ function initUiTree(initialTree) {
                 type="text"
                 onChange={(e) => store.dispatch(filterTreeNodes(e.target.value, comparator))}
             />
+
             <Tree
                 {...store.getState().tree}
+                dataRenderer={renderData}
                 onNodeClick={(nodeId) => store.dispatch(toggleCollapseExpand(nodeId))}
                 onNodeSelect={(nodeId) => store.dispatch(toggleSelectDeselect(nodeId))}
             />
+
+            <SelectedItems
+                items={store.getState().selectedItems}
+            />
         </div>,
-        document.getElementById('example')
+        domElem
     );
     render();
 
     store.subscribe(render);
 }
 
-initUiTree(treeFromServe);
+initUiTree(document.getElementById('example'), treeFromServe);

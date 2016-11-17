@@ -164,11 +164,14 @@ function filterTreeNodes(state, action) {
     function filterTree(node, data) {
         const {children = []} = node;
 
-        const {contain, utilData} = comparator(node.data, data);
-        if (contain) {
-            return {...node, utilData}
-        } else if (children.length === 0) {
-            return null;
+        if (node.data) {
+            // data could be null for root node (which has only children elements).
+            const {contain, utilData} = comparator(node.data, data);
+            if (contain) {
+                return {...node, utilData}
+            } else if (children.length === 0) {
+                return null;
+            }
         }
 
         let newChildren = children.map(
