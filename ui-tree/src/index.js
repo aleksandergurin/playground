@@ -14,8 +14,8 @@ import {treeReducer} from './reducer';
 
 // todo: add selected default values during initialisation
 const treeFromServe = {
+    data: null,
     id: '1',
-    data: {code: '1', title: 'First level'},
     collapsed: false,
     children: [
         {
@@ -193,12 +193,13 @@ function initUiTree(domElem, initialTree) {
             <Tree
                 {...store.getState().tree}
                 dataRenderer={renderData}
-                onNodeClick={(nodeId) => store.dispatch(toggleCollapseExpand(nodeId))}
-                onNodeSelect={(nodeId) => store.dispatch(toggleSelectDeselect(nodeId))}
+                onNodeClick={nodeId => store.dispatch(toggleCollapseExpand(nodeId))}
+                onNodeSelect={nodeId => store.dispatch(toggleSelectDeselect(nodeId))}
             />
 
             <SelectedItems
                 items={store.getState().selectedItems}
+                onClose={nodeId => store.dispatch(toggleSelectDeselect(nodeId))}
             />
         </div>,
         domElem
