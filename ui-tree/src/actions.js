@@ -15,8 +15,7 @@ export const toggleSelectDeselect = (nodeId) => ({
 });
 
 
-export const filterTreeNodes = (data, comparator) => ({
+export const changeFilterData = (filterData) => ({
     type: FILTER_TREE_NODES,
-    data,
-    comparator,
+    filterData,
 });

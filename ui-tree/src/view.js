@@ -81,10 +81,10 @@ export function Tree(props) {
 
 
 export function SelectedItems(props) {
-    const {selectedItems = [], onClose} = props;
+    const {items = [], onClose} = props;
     return (
         <div>
-            {selectedItems.map((i, num) =>
+            {items.map((i, num) =>
                 <div key={num}>
                     {i.data.title} <span onClick={() => onClose(i.id)}>X</span>
                 </div>
@@ -93,6 +93,6 @@ export function SelectedItems(props) {
     );
 }
 SelectedItems.propTypes = {
-    selectedItems: PropTypes.array.isRequired,
+    items: PropTypes.array.isRequired,
     onClose: PropTypes.func.isRequired,
 };

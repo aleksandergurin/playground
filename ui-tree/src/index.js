@@ -6,16 +6,16 @@ import {Tree, SelectedItems} from './view';
 import {
     toggleCollapseExpand,
     toggleSelectDeselect,
-    filterTreeNodes
+    changeFilterData
 } from './actions';
 
-import {treeReducer} from './reducer';
+import {treeReducer, filterTree} from './reducer';
 
 
 // todo: add selected default values during initialisation
 const treeFromServe = {
     data: null,
-    id: '1',
+    id: null,
     collapsed: false,
     children: [
         {
@@ -102,6 +102,10 @@ const treeFromServe = {
 function comparator(dataItem, userInput) {
     let res = {contain: false, utilData: {}};
 
+    if (!userInput || userInput === '') {
+        return {...res, contain: true};
+    }
+
     const inputIsCode = (input) => /^(\d{1,8})-?\d?$/.test(input);
     const foundSubstring = (base, subStr) => {
         let start = base.toLowerCase().indexOf(subStr.toLowerCase());
@@ -178,8 +182,8 @@ function initUiTree(domElem, initialTree) {
         treeReducer,
         {
             treeState: {
-                originalTreeCache: null,
                 tree: initialTree,
+                filterData: '',
                 selectedItems: [],
             }
         }
@@ -189,19 +193,23 @@ function initUiTree(domElem, initialTree) {
         <div>
             <input
                 type="text"
-                onChange={(e) => store.dispatch(filterTreeNodes(e.target.value, comparator))}
+                onChange={(e) => store.dispatch(changeFilterData(e.target.value))}
             />
 
             <Tree
-                {...store.getState().treeState.tree}
+                {...filterTree(
+                    store.getState().treeState.tree,
+                    store.getState().treeState.filterData,
+                    comparator
+                )}
                 dataRenderer={renderData}
                 onNodeClick={nodeId => store.dispatch(toggleCollapseExpand(nodeId))}
                 onNodeSelect={nodeId => store.dispatch(toggleSelectDeselect(nodeId))}
             />
 
             <SelectedItems
-                {...store.getState().treeState}
-                onClose={nodeId => store.dispatch(toggleSelectDeselect(nodeId))}
+                items={store.getState().treeState.selectedItems}
+                onClose={id => store.dispatch(toggleSelectDeselect(id))}
             />
         </div>,
         domElem

@@ -1,10 +1,11 @@
 
 module.exports = {
-    entry: __dirname + "/src/index.js",
+    entry: "./src/index.js",
 
     output: {
-        path: __dirname + "/build",
-        filename: "bundle.js"
+        path: "build/",
+        filename: "bundle.js",
+        publicPath: "build/",
     },
 
     devtool: "source-map",

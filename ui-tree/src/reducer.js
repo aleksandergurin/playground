@@ -156,29 +156,25 @@ function toggleSelectionOfTreeNode(state, action) {
 }
 
 
-const defaultComparator = (nodeData, inputData) => ({contain: false});
+const defaultComparator = (nodeData, filterData) => ({contain: true});
 
-function filterTreeNodes(state, action) {
-    const {comparator = defaultComparator()} = action;
+export function filterTree(tree, filterData, comparator = defaultComparator) {
 
-    function filterTree(node, data) {
-        const {children = []} = node;
-
+    function filterRecursive(node, data) {
         if (node.data) {
             // data could be null for root node (which has only children elements).
             const {contain, utilData} = comparator(node.data, data);
             if (contain) {
                 return {...node, utilData}
-            } else if (children.length === 0) {
-                return null;
             }
         }
-
-        let newChildren = children.map(
-            n => filterTree(n, data)
-        ).filter(
-            n => (n !== null)
+        const {children = []} = node;
+        const newChildren = (
+            children
+                .map(n => filterRecursive(n, data))
+                .filter(n => (n !== null))
         );
+
         if (newChildren.length > 0) {
             return {
                 ...node,
@@ -189,29 +185,17 @@ function filterTreeNodes(state, action) {
         return null;
     }
 
-    if (!action.data) {
-        return {
-            ...state,
-            tree: state.originalTreeCache,
-            originalTreeCache: null,
-        }
-    }
-    let res = {...state};
-    if (!state.originalTreeCache) {
-        res.originalTreeCache = res.tree;
-    }
-    res.tree = filterTree(res.originalTreeCache, action.data);
-    return res;
+    return filterRecursive(tree, filterData);
 }
 
 const defaultState = {
     treeState: {
-        originalTreeCache: null,
         tree: {
             id: 0,
             data: null,
             children: [],
         },
+        filterData: '',
         selectedItems: [],
     }
 };
@@ -231,7 +215,10 @@ export function treeReducer(state = defaultState, action) {
         case FILTER_TREE_NODES:
             return {
                 ...state,
-                treeState: filterTreeNodes(state.treeState, action),
+                treeState: {
+                    ...state.treeState,
+                    filterData: action.filterData,
+                },
             };
         default:
             return state;
