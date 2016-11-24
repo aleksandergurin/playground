@@ -1,104 +1,19 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
+
 import {createStore} from 'redux';
 
-import {Tree, SelectedItems} from './view';
+import {TreeContainer} from './containers/TreeContainer';
 import {
     toggleCollapseExpand,
     toggleSelectDeselect,
-    changeFilterData
+    changeFilterData,
 } from './actions';
 
-import {treeReducer, filterTree} from './reducer';
+import {treeReducer, initTreeSelection} from './reducer';
 
+const CPV_CODE_RE = /^(\d{1,8})-?\d?$/;
 
-// todo: add selected default values during initialisation
-const treeFromServe = {
-    data: null,
-    id: null,
-    collapsed: false,
-    children: [
-        {
-            id: '1.1',
-            data: {code: '11', title: 'Second level A'},
-            collapsed: false,
-            children: [
-                {
-                    id: '1.1.2',
-                    data: {code: '112', title: 'Third level A'},
-                    collapsed: false,
-                    children: [
-                        {
-                            id: '1.1.1.1',
-                            data: {code: '1111', title: 'Forth level A'},
-                            collapsed: false,
-                            children: [
-                                {
-                                    id: '1.1.1.1.1',
-                                    data: {code: '11111', title: 'Fifth level A'},
-                                    collapsed: false,
-                                },
-                                {
-                                    id: '1.1.1.1.2',
-                                    data: {code: '11112', title: 'Fifth level B'},
-                                    collapsed: false,
-                                },
-                                {
-                                    id: '1.1.1.1.3',
-                                    data: {code: '11113', title: 'Fifth level C'},
-                                    collapsed: false,
-                                },
-                                {
-                                    id: '1.1.1.1.4',
-                                    data: {code: '11114', title: 'Fifth level D'},
-                                    collapsed: false,
-                                },
-                            ]
-                        },
-                        {
-                            id: '1.1.1.2',
-                            data: {code: '1112', title: 'Forth level B'},
-                            collapsed: false,
-                        },
-                        {
-                            id: '1.1.1.3',
-                            data: {code: '1113', title: 'Forth level C'},
-                            collapsed: false,
-                        },
-                    ],
-                },
-                {
-                    id: '1.1.3',
-                    data: {code: '113', title: 'Third level B'},
-                    collapsed: false,
-                },
-                {
-                    id: '1.1.4',
-                    data: {code: '114', title: 'Third level C'},
-                    collapsed: false,
-                },
-                {
-                    id: '1.1.5',
-                    data: {code: '115', title: 'Third level D'},
-                    collapsed: false,
-                },
-            ]
-        },
-        {
-            id: '1.2',
-            data: {code: '12', title: 'Second level B'},
-            collapsed: false,
-        },
-        {
-            id: '1.3',
-            data: {code: '13', title: 'Second level C'},
-            collapsed: false,
-        },
-    ]
-};
-
-
-// todo: consider to move comparator and renderData into separate file
 function comparator(dataItem, userInput) {
     let res = {contain: false, utilData: {}};
 
@@ -106,14 +21,14 @@ function comparator(dataItem, userInput) {
         return {...res, contain: true};
     }
 
-    const inputIsCode = (input) => /^(\d{1,8})-?\d?$/.test(input);
+    const inputIsCode = (input) => CPV_CODE_RE.test(input);
     const foundSubstring = (base, subStr) => {
-        let start = base.toLowerCase().indexOf(subStr.toLowerCase());
-        let end = start + subStr.length;
+        const start = base.toLowerCase().indexOf(subStr.toLowerCase());
+        const end = start + subStr.length;
         if (start !== -1) {
             return {contain: true, start, end};
         }
-        return {contain: false}
+        return {contain: false};
     };
 
     // Search by code
@@ -126,25 +41,25 @@ function comparator(dataItem, userInput) {
                 utilData: {
                     ...res.utilData,
                     markCodeStart: start,
-                    markCodeEnd: end
-                }
+                    markCodeEnd: end,
+                },
             };
         }
     }
 
-    // Search by title
-    const {title} = dataItem;
-    if (typeof title === 'string' && typeof userInput === 'string') {
-        const {contain, start, end} = foundSubstring(dataItem.title, userInput);
+    // Search by name
+    const {name} = dataItem;
+    if (typeof name === 'string' && typeof userInput === 'string') {
+        const {contain, start, end} = foundSubstring(dataItem.name, userInput);
         if (contain) {
             res = {
                 ...res,
                 contain,
                 utilData: {
                     ...res.utilData,
-                    markTitleStart: start,
-                    markTitleEnd: end
-                }
+                    markNameStart: start,
+                    markNameEnd: end,
+                },
             };
         }
     }
@@ -161,22 +76,42 @@ function renderData(data, utilData = {}) {
         </span>
     );
     const {markCodeStart, markCodeEnd} = utilData;
-    const {markTitleStart, markTitleEnd} = utilData;
-    let {code = 'XXX', title = '---'} = data;
+    const {markNameStart, markNameEnd} = utilData;
+    let {code = 'XXX', name = '---'} = data;
 
     if (Number.isInteger(markCodeStart) && Number.isInteger(markCodeEnd)) {
         code = mark(code, markCodeStart, markCodeEnd);
     }
 
-    if (Number.isInteger(markTitleStart) && Number.isInteger(markTitleEnd)) {
-        title = mark(title, markTitleStart, markTitleEnd);
+    if (Number.isInteger(markNameStart) && Number.isInteger(markNameEnd)) {
+        name = mark(name, markNameStart, markNameEnd);
     }
 
-    return <span><b>{code}</b> - {title}</span>
+    return <span><b>{code}</b> - {name}</span>;
+}
+
+function renderSelected(data) {
+    const {code = 'XXX', name = '---'} = data;
+    return <span><b>{code}</b> - {name}</span>;
+}
+
+function initCollapsed(node) {
+    const {children = []} = node;
+    return {
+        ...node,
+        collapsed: true,
+        children: children.map(initCollapsed),
+    };
 }
 
 
-function initUiTree(domElem, initialTree) {
+function initUiTree(domElem, listOfRootNodes, selectedNodes) {
+    const initialTree = {
+        data: null,
+        children: listOfRootNodes.map(initCollapsed),
+    };
+
+    const selected = initTreeSelection(initialTree, selectedNodes).map((n) => ({data: n}));
 
     const store = createStore(
         treeReducer,
@@ -184,34 +119,24 @@ function initUiTree(domElem, initialTree) {
             treeState: {
                 tree: initialTree,
                 filterData: '',
-                selectedItems: [],
-            }
-        }
+                selectedItems: selected,
+            },
+        },
     );
 
     const render = () => ReactDOM.render(
-        <div>
-            <input
-                type="text"
-                onChange={(e) => store.dispatch(changeFilterData(e.target.value))}
-            />
-
-            <Tree
-                {...filterTree(
-                    store.getState().treeState.tree,
-                    store.getState().treeState.filterData,
-                    comparator
-                )}
-                dataRenderer={renderData}
-                onNodeClick={nodeId => store.dispatch(toggleCollapseExpand(nodeId))}
-                onNodeSelect={nodeId => store.dispatch(toggleSelectDeselect(nodeId))}
-            />
-
-            <SelectedItems
-                items={store.getState().treeState.selectedItems}
-                onClose={id => store.dispatch(toggleSelectDeselect(id))}
-            />
-        </div>,
+        <TreeContainer
+            tree={store.getState().treeState.tree}
+            filterData={store.getState().treeState.filterData}
+            selectedItems={store.getState().treeState.selectedItems}
+            comparator={comparator}
+            dataRenderer={renderData}
+            renderSelected={renderSelected}
+            onChange={(userInput) => store.dispatch(changeFilterData(userInput))}
+            onNodeClick={(id) => store.dispatch(toggleCollapseExpand(id))}
+            onNodeSelect={(id) => store.dispatch(toggleSelectDeselect(id))}
+            onClose={(id) => store.dispatch(toggleSelectDeselect(id))}
+        />,
         domElem
     );
     render();
@@ -219,4 +144,39 @@ function initUiTree(domElem, initialTree) {
     store.subscribe(render);
 }
 
-initUiTree(document.getElementById('example'), treeFromServe);
+const rootNodes = [
+    {
+        data: {id: 1, code: '1', name: 'First'},
+        children: [
+            {
+                data: {id: 11, code: '11', name: 'First A'},
+                children: [],
+            },
+        ],
+    },
+    {
+        data: {id: 2, code: '2', name: 'Second'},
+        children: [
+            {
+                data: {id: 22, code: '22', name: 'Second A'},
+                children: [],
+            },
+        ],
+    },
+    {
+        data: {id: 3, code: '3', name: 'Third'},
+        children: [
+            {
+                data: {id: 33, code: '3', name: 'Third A'},
+                children: [],
+            },
+        ],
+    },
+];
+
+
+initUiTree(
+    document.getElementById('example'),
+    rootNodes,
+    []
+);

@@ -1,7 +1,5 @@
 import React, { PropTypes } from 'react';
 
-import { gettext as _ } from 'gettext';
-
 import { DebouncedInput } from '../components/DebouncedInput';
 import { SelectedItems } from '../components/SelectedItems';
 import { Tree } from '../components/Tree';
@@ -18,7 +16,7 @@ export function TreeContainer(props) {
         <div>
             <div className='b-zk-subscription__categories'>
                 <DebouncedInput
-                    placeholder={_('Найти (например: топливо, продукты)')}
+                    placeholder={'Найти'}
                     cls='zk-textfield'
                     onChange={onChange}
                 />
@@ -36,7 +34,7 @@ export function TreeContainer(props) {
             </div>
 
             {selectedItems.length > 0
-                ? <div className='h-mt-20 h-mb-20'>{_('Выбранные категории')}:</div>
+                ? <div className='h-mt-20 h-mb-20'>Выбранные категории:</div>
                 : null
             }
             <SelectedItems
