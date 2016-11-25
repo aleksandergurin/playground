@@ -10,7 +10,7 @@ import {
     changeFilterData,
 } from './actions';
 
-import {treeReducer, initTreeSelection} from './reducer';
+import {treeReducer, initTreeSelection, initCollapsed} from './reducer';
 
 const CPV_CODE_RE = /^(\d{1,8})-?\d?$/;
 
@@ -93,15 +93,6 @@ function renderData(data, utilData = {}) {
 function renderSelected(data) {
     const {code = 'XXX', name = '---'} = data;
     return <span><b>{code}</b> - {name}</span>;
-}
-
-function initCollapsed(node) {
-    const {children = []} = node;
-    return {
-        ...node,
-        collapsed: true,
-        children: children.map(initCollapsed),
-    };
 }
 
 

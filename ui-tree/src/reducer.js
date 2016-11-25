@@ -6,6 +6,16 @@ import {
 
 import * as NODE_ENUM from './enums';
 
+export function initCollapsed(node) {
+    const { children = [] } = node;
+    return {
+        ...node,
+        collapsed: true,
+        selected: NODE_ENUM.NODE_DESELECTED,
+        children: children.map(initCollapsed),
+    };
+}
+
 export function initTreeSelection(node, selectedNodes = []) {
     let nodes = selectedNodes.sort((a, b) => a.code.localeCompare(b.code));
 
@@ -26,6 +36,7 @@ export function initTreeSelection(node, selectedNodes = []) {
     let curCode;
     const condition = (code) => (n) => (
         n.code === code ||
+        cpvCodePrefix(code).length > 5 ||
         n.code.indexOf(cpvCodePrefix(code)) !== 0
     );
     for (i = 0; i < nodes.length; ++i) {
@@ -64,7 +75,7 @@ export function initTreeSelection(node, selectedNodes = []) {
 }
 
 
-function toggleCollapseTreeNode(state, action) {
+export function toggleCollapseTreeNode(state, action) {
     function collapseRecursive(node, nodeId) {
         const { children = [] } = node;
 
@@ -79,7 +90,7 @@ function toggleCollapseTreeNode(state, action) {
 }
 
 
-function toggleSelectionOfTreeNode(state, action) {
+export function toggleSelectionOfTreeNode(state, action) {
     function toggleSelectionInner(node, nodeId) {
         // Utilitarian functions
 
@@ -217,7 +228,7 @@ export function filterTree(tree, filterData, comparator = defaultComparator) {
     function filterRecursive(node, data) {
         if (node.data) {
             // data could be null for root node (which has only children elements).
-            const { contain, utilData } = comparator(node.data, data);
+            const { contain, utilData = null } = comparator(node.data, data);
             if (contain) {
                 return { ...node, utilData };
             }
