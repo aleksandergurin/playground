@@ -31,15 +31,13 @@ export function initTreeSelection(node, selectedNodes = []) {
         return division + main;             // 031      result prefix
     }
 
-    // the following code
-    let i;
     let curCode;
     const condition = (code) => (n) => (
         n.code === code ||
         cpvCodePrefix(code).length > 5 ||
         n.code.indexOf(cpvCodePrefix(code)) !== 0
     );
-    for (i = 0; i < nodes.length; ++i) {
+    for (let i = 0; i < nodes.length; ++i) {
         curCode = nodes[i].code;
 
         nodes = nodes.filter(condition(curCode));
@@ -59,8 +57,8 @@ export function initTreeSelection(node, selectedNodes = []) {
         }
 
         const { children = [] } = n;
-        let child;
-        for (child of children) {
+
+        for (let child of children) {
             if (setSelectionRecursive(child, code)) {
                 n.selected = NODE_ENUM.NODE_HAS_SELECTED_CHILDREN;
                 return true;
