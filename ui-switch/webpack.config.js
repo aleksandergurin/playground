@@ -1,5 +1,5 @@
 module.exports = {
-    entry: "./src/index.js",
+    entry: "./index.js",
 
     output: {
         path: "build/",
@@ -17,7 +17,7 @@ module.exports = {
         loaders: [
             {
                 test: /\.jsx?$/,
-                exclude: '/node_modules',
+                exclude: /node_modules/,
                 loader: 'babel-loader',
                 query: {
                     presets: ['es2015', 'stage-2', 'react']
@@ -25,7 +25,7 @@ module.exports = {
             },
             {
                 test: /\.styl$/,
-                exclude: '/node_modules',
+                exclude: /node_modules/,
                 loader: 'style!css!stylus',
             }
         ]

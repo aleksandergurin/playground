@@ -1,6 +1,7 @@
 {
     "name": "ui-switch",
     "version": "1.0.0",
+    "main": "index.js",
     "description": "UI switch component",
     "author": "Aleksander Gurin",
     "license": "ISC",

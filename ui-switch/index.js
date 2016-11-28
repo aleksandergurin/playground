@@ -1,8 +1,8 @@
-require('./style/index.styl');
+import './index.styl';
 
 import React from 'react';
 import ReactDOM from 'react-dom';
-import {Switch} from './view';
+import {Switch} from './Switch';
 
 function InitSwitch(domElem) {
     ReactDOM.render(<Switch />, domElem);
