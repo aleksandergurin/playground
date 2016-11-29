@@ -1,31 +1,38 @@
 <script>
     import './node.tag';
+    import {createStore} from 'redux';
+    import {treeReducer} from '../reducer';
+    import {
+        toggleCollapseExpand,
+        toggleSelectDeselect,
+    } from '../actions';
 </script>
 
 <tree>
-    <div class="b-tree-branch" each={node in state.root}>
-        <node node={node}></node>
+    <div class="b-tree-branch" each={node in state.rootNodes}>
+        <node node={node} on_node_click={on_node_click} on_node_select={on_node_select} />
     </div>
 
     <script>
-        let self = this;
+        const self = this;
 
         self.state = {
-            root: [],
+            rootNodes: []
         };
+        self.on_node_click = () => {};
+        self.on_node_select = () => {};
 
         self.on('mount', () => {
-            let state = {
-                root: opts.tree.root,
-            };
+            const opts = this.opts;
+            const store = createStore(treeReducer, opts);
+            store.subscribe(() => {
+                console.log(store.getState());
+                self.update({state: store.getState()})
+            });
 
-            const update = () => {
-                this.update({
-                    state: state
-                });
-            };
-
-            setTimeout(() => update(), 2000);
+            self.on_node_click = (nodeId) => store.dispatch(toggleCollapseExpand(nodeId));
+            self.on_node_select = (nodeId) => store.dispatch(toggleSelectDeselect(nodeId));
+            self.update({state: store.getState()});
         });
     </script>
 </tree>

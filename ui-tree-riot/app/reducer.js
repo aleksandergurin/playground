@@ -73,7 +73,7 @@ export function initTreeSelection(node, selectedNodes = []) {
 }
 
 
-export function toggleCollapseTreeNode(state, action) {
+export function toggleCollapseTreeNode(rootNode, action) {
     function collapseRecursive(node, nodeId) {
         const { children = [] } = node;
 
@@ -84,11 +84,11 @@ export function toggleCollapseTreeNode(state, action) {
         };
     }
 
-    return { ...state, tree: collapseRecursive(state.tree, action.nodeId) };
+    return collapseRecursive(rootNode, action.nodeId);
 }
 
 
-export function toggleSelectionOfTreeNode(state, action) {
+export function toggleSelectionOfTreeNode(node, action) {
     function toggleSelectionInner(node, nodeId) {
         // Utilitarian functions
 
@@ -195,27 +195,27 @@ export function toggleSelectionOfTreeNode(state, action) {
         return { ...toggleSelectionRecursive(node, nodeId) };
     }
 
-    function getSelectedItems(tree) {
-        const res = [];
+    // function getSelectedItems(tree) {
+    //     const res = [];
+    //
+    //     const getSelectedRecursive = (node) => {
+    //         if (node.data && node.selected === NODE_ENUM.NODE_SELECTED) {
+    //             res.push({
+    //                 data: node.data,
+    //             });
+    //         } else {
+    //             const { children = [] } = node;
+    //             children.forEach(getSelectedRecursive);
+    //         }
+    //     };
+    //     getSelectedRecursive(tree);
+    //     return res;
+    // }
+    //
+    // const tree = toggleSelectionInner(state.tree, action.nodeId);
+    // const selectedItems = getSelectedItems(tree);
 
-        const getSelectedRecursive = (node) => {
-            if (node.data && node.selected === NODE_ENUM.NODE_SELECTED) {
-                res.push({
-                    data: node.data,
-                });
-            } else {
-                const { children = [] } = node;
-                children.forEach(getSelectedRecursive);
-            }
-        };
-        getSelectedRecursive(tree);
-        return res;
-    }
-
-    const tree = toggleSelectionInner(state.tree, action.nodeId);
-    const selectedItems = getSelectedItems(tree);
-
-    return { ...state, tree, selectedItems };
+    return toggleSelectionInner(node, action.nodeId);
 }
 
 
@@ -252,14 +252,7 @@ export function filterTree(tree, filterData, comparator = defaultComparator) {
 }
 
 const defaultState = {
-    treeState: {
-        tree: {
-            data: null,
-            children: [],
-        },
-        filterData: '',
-        selectedItems: [],
-    },
+    rootNodes: [],
 };
 
 export function treeReducer(state = defaultState, action) {
@@ -267,12 +260,12 @@ export function treeReducer(state = defaultState, action) {
         case TOGGLE_COLLAPSE_EXPAND:
             return {
                 ...state,
-                treeState: toggleCollapseTreeNode(state.treeState, action),
+                rootNodes: state.rootNodes.map(n => toggleCollapseTreeNode(n, action)),
             };
         case TOGGLE_SELECT_DESELECT:
             return {
                 ...state,
-                treeState: toggleSelectionOfTreeNode(state.treeState, action),
+                rootNodes: state.rootNodes.map(n => toggleSelectionOfTreeNode(n, action)),
             };
         case FILTER_TREE_NODES:
             return {
