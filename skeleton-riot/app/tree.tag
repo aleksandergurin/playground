@@ -1,7 +1,7 @@
-<tree>
-    <node data={ opts.data } children={ opts.children } />
+<script>
+    import './node.tag';
+</script>
 
-    <script>
-        require('./node.tag');
-    </script>
+<tree>
+    <node data={ opts.data } children={ opts.children }></node>
 </tree>

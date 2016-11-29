@@ -15,16 +15,18 @@ module.exports = {
     ],
 
     module: {
-        loaders: [
-            {
-                test: /\.js$/,
-                exclude: /node_modules/,
-                loader: 'babel-loader',
-            },
+        preLoaders: [
             {
                 test: /\.tag$/,
                 exclude: /node_modules/,
                 loader: 'riotjs-loader',
+            }
+        ],
+        loaders: [
+            {
+                test: /\.js|\.tag$/,
+                exclude: /node_modules/,
+                loader: 'babel-loader',
             },
         ]
     }

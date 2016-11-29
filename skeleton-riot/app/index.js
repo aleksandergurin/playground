@@ -1,4 +1,4 @@
-require('./tree.tag');
+import './tree.tag';
 
 riot.mount('tree', {
     data: {name: 'root'},
