@@ -1,6 +1,7 @@
 <script>
-    import './node.tag';
     import './debounced-input.tag';
+    import './node.tag';
+    import './selected-items.tag';
 
     import {createStore} from 'redux';
     import {
@@ -33,6 +34,13 @@
                 </div>
             </div>
         </div>
+        <div if={selected_items.length} class="h-mt-20 h-mb-20">
+            {selectd_items_text}:
+        </div>
+        <selected-items
+            items={state.selectedItems}
+            on_close={(...args) => fn.on_close(...args)}
+        ></selected-items>
     </div>
 
     <script>
@@ -47,11 +55,14 @@
         };
         self.state = opts.tree;
         self.input_placeholder = opts.input_placeholder;
+        self.selectd_items_text = opts.selectd_items_text;
+        self.selected_items = opts.tree.selectedItems;
 
         self.fn = {
             on_node_click: () => {},
             on_node_select: () => {},
             on_change: () => {},
+            on_close: () => {},
         };
 
         self.on('mount', () => {
@@ -65,6 +76,7 @@
             self.fn.on_node_click = (nodeId) => store.dispatch(toggleCollapseExpand(nodeId));
             self.fn.on_node_select = (nodeId) => store.dispatch(toggleSelectDeselect(nodeId));
             self.fn.on_change = (text) => store.dispatch(changeFilterData(text));
+            self.fn.on_close = (nodeId) => console.log(nodeId);
         });
     </script>
 </tree>

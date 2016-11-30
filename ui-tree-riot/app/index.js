@@ -50,5 +50,9 @@ riot.mount('cpv-tree', {
         ],
 
         filterData: '',
+        selectedItems: [
+            {id: 2, code: '2', name: 'Second'},
+            {id: 3, code: '3', name: 'Third'},
+        ],
     }
 });
