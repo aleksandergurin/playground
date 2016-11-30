@@ -34,7 +34,7 @@
                 </div>
             </div>
         </div>
-        <div if={selected_items.length} class="h-mt-20 h-mb-20">
+        <div if={state.selectedItems.length} class="h-mt-20 h-mb-20">
             {selectd_items_text}:
         </div>
         <selected-items
@@ -56,7 +56,6 @@
         self.state = opts.tree;
         self.input_placeholder = opts.input_placeholder;
         self.selectd_items_text = opts.selectd_items_text;
-        self.selected_items = opts.tree.selectedItems;
 
         self.fn = {
             on_node_click: () => {},
@@ -71,12 +70,13 @@
                 self.update({
                     state: store.getState()
                 });
+                console.log('from store', self.state.selectedItems);
             });
 
             self.fn.on_node_click = (nodeId) => store.dispatch(toggleCollapseExpand(nodeId));
             self.fn.on_node_select = (nodeId) => store.dispatch(toggleSelectDeselect(nodeId));
             self.fn.on_change = (text) => store.dispatch(changeFilterData(text));
-            self.fn.on_close = (nodeId) => console.log(nodeId);
+            self.fn.on_close = (nodeId) => store.dispatch(toggleSelectDeselect(nodeId));
         });
     </script>
 </tree>

@@ -94,133 +94,127 @@ export function toggleCollapseTreeNode(rootNode, action) {
 
 
 export function toggleSelectionOfTreeNode(node, action) {
-    function toggleSelectionInner(node, nodeId) {
-        // Utilitarian functions
+    const nodeId = action.nodeId;
 
-        const hasSelectedParent = ({ selected = NODE_DESELECTED } = {}) => (
-            selected === NODE_HAS_SELECTED_PARENT
-        );
+    // Utilitarian functions
+    const hasSelectedParent = ({ selected = NODE_DESELECTED } = {}) => (
+        selected === NODE_HAS_SELECTED_PARENT
+    );
 
-        const hasSelectedChildren = ({ selected = NODE_DESELECTED } = {}) => (
-            selected === NODE_HAS_SELECTED_CHILDREN
-        );
+    const hasSelectedChildren = ({ selected = NODE_DESELECTED } = {}) => (
+        selected === NODE_HAS_SELECTED_CHILDREN
+    );
 
-        const isDeselected = ({ selected = NODE_DESELECTED } = {}) => (
-            selected === NODE_DESELECTED
-        );
+    const isDeselected = ({ selected = NODE_DESELECTED } = {}) => (
+        selected === NODE_DESELECTED
+    );
 
-        const isSelected = ({ selected = NODE_DESELECTED } = {}) => (
-            selected === NODE_SELECTED
-        );
+    const isSelected = ({ selected = NODE_DESELECTED } = {}) => (
+        selected === NODE_SELECTED
+    );
 
-        const setAll = (n, selected) => {
-            const { children = [] } = n;
-            return {
-                ...n, selected,
-                children: children.map((e) => setAll(e, selected)),
-            };
+    const setAll = (n, selected) => {
+        const { children = [] } = n;
+        return {
+            ...n, selected,
+            children: children.map((e) => setAll(e, selected)),
         };
+    };
 
-        // This is the function that does main work.
-        function toggleSelectionRecursive(curNode, id) {
-            const selected = curNode.selected || NODE_DESELECTED;
+    // This is the function that does main work.
+    function toggleSelectionRecursive(curNode, id) {
+        const selected = curNode.selected || NODE_DESELECTED;
 
-            if (curNode.data && curNode.data.id === id) {
-                switch (selected) {
-                    case NODE_HAS_SELECTED_CHILDREN: // fallthrough
-                    case NODE_DESELECTED:
-                        return {
-                            ...setAll(curNode, NODE_HAS_SELECTED_PARENT),
-                            selected: NODE_SELECTED,
-                        };
-                    case NODE_HAS_SELECTED_PARENT: // fallthrough
-                    case NODE_SELECTED:
-                        return {
-                            ...setAll(curNode, NODE_DESELECTED),
-                        };
-                    default:
-                        return { ...curNode };
-                }
+        if (curNode.data && curNode.data.id === id) {
+            switch (selected) {
+                case NODE_HAS_SELECTED_CHILDREN: // fallthrough
+                case NODE_DESELECTED:
+                    return {
+                        ...setAll(curNode, NODE_HAS_SELECTED_PARENT),
+                        selected: NODE_SELECTED,
+                    };
+                case NODE_HAS_SELECTED_PARENT: // fallthrough
+                case NODE_SELECTED:
+                    return {
+                        ...setAll(curNode, NODE_DESELECTED),
+                    };
+                default:
+                    return { ...curNode };
             }
+        }
 
-            const { children = [] } = curNode;
-            const newChildren = children.map((n) => toggleSelectionRecursive(n, nodeId));
+        const { children = [] } = curNode;
+        const newChildren = children.map((n) => toggleSelectionRecursive(n, nodeId));
 
-            if (newChildren.length > 0) {
-                if (newChildren.every(isSelected)) {
-                    if (curNode.data) {
-                        return {
-                            ...curNode,
-                            selected: NODE_SELECTED,
-                            children: newChildren.map((n) => ({ ...n, selected: NODE_HAS_SELECTED_PARENT })),
-                        };
-                    }
-                    // This is a special case when you have a tree
-                    // that doesn't have a root element data,
-                    // only a list of children elements.
+        if (newChildren.length > 0) {
+            if (newChildren.every(isSelected)) {
+                if (curNode.data) {
                     return {
                         ...curNode,
                         selected: NODE_SELECTED,
-                        children: newChildren,
-                    };
-                } else if (newChildren.every(isDeselected)) {
-                    return {
-                        ...curNode,
-                        selected: NODE_DESELECTED,
-                        children: newChildren,
-                    };
-                } else if (newChildren.some((n) => (hasSelectedChildren(n) || isSelected(n)))) {
-                    return {
-                        ...curNode,
-                        selected: NODE_HAS_SELECTED_CHILDREN,
-                        children: newChildren.map((n) => {
-                            if (n.selected === NODE_HAS_SELECTED_PARENT) {
-                                return { ...n, selected: NODE_SELECTED };
-                            }
-                            return { ...n };
-                        }),
-                    };
-                } else if (newChildren.some(hasSelectedParent) && newChildren.some(isDeselected)) {
-                    return {
-                        ...curNode,
-                        selected: NODE_HAS_SELECTED_CHILDREN,
-                        children: newChildren.map((n) => {
-                            if (n.selected === NODE_HAS_SELECTED_PARENT) {
-                                return { ...n, selected: NODE_SELECTED };
-                            }
-                            return { ...n };
-                        }),
+                        children: newChildren.map((n) => ({ ...n, selected: NODE_HAS_SELECTED_PARENT })),
                     };
                 }
+                // This is a special case when you have a tree
+                // that doesn't have a root element data,
+                // only a list of children elements.
+                return {
+                    ...curNode,
+                    selected: NODE_SELECTED,
+                    children: newChildren,
+                };
+            } else if (newChildren.every(isDeselected)) {
+                return {
+                    ...curNode,
+                    selected: NODE_DESELECTED,
+                    children: newChildren,
+                };
+            } else if (newChildren.some((n) => (hasSelectedChildren(n) || isSelected(n)))) {
+                return {
+                    ...curNode,
+                    selected: NODE_HAS_SELECTED_CHILDREN,
+                    children: newChildren.map((n) => {
+                        if (n.selected === NODE_HAS_SELECTED_PARENT) {
+                            return { ...n, selected: NODE_SELECTED };
+                        }
+                        return { ...n };
+                    }),
+                };
+            } else if (newChildren.some(hasSelectedParent) && newChildren.some(isDeselected)) {
+                return {
+                    ...curNode,
+                    selected: NODE_HAS_SELECTED_CHILDREN,
+                    children: newChildren.map((n) => {
+                        if (n.selected === NODE_HAS_SELECTED_PARENT) {
+                            return { ...n, selected: NODE_SELECTED };
+                        }
+                        return { ...n };
+                    }),
+                };
             }
-
-            return { ...curNode, children: newChildren };
         }
 
-        return { ...toggleSelectionRecursive(node, nodeId) };
+        return { ...curNode, children: newChildren };
     }
 
-    // function getSelectedItems(tree) {
-    //     const res = [];
-    //
-    //     const getSelectedRecursive = (node) => {
-    //         if (node.data && node.selected === NODE_SELECTED) {
-    //             res.push({
-    //                 data: node.data,
-    //             });
-    //         } else {
-    //             const { children = [] } = node;
-    //             children.forEach(getSelectedRecursive);
-    //         }
-    //     };
-    //     getSelectedRecursive(tree);
-    //     return res;
-    // }
-    //
-    // const tree = toggleSelectionInner(state.tree, action.nodeId);
-    // const selectedItems = getSelectedItems(tree);
+    return { ...toggleSelectionRecursive(node, nodeId) };
+}
 
-    return toggleSelectionInner(node, action.nodeId);
+function getSelectedItems(node) {
+    const res = [];
+
+    const getSelectedRecursive = (node) => {
+        if (node.data && node.selected === NODE_SELECTED) {
+            res.push({
+                data: node.data,
+            });
+        } else {
+            const { children = [] } = node;
+            children.forEach(getSelectedRecursive);
+        }
+    };
+    getSelectedRecursive(node);
+    return res;
 }
 
 
@@ -268,9 +262,13 @@ export function treeReducer(state = defaultState, action) {
                 rootNodes: state.rootNodes.map(n => toggleCollapseTreeNode(n, action)),
             };
         case TOGGLE_SELECT_DESELECT:
+            const rootNodes = state.rootNodes.map(n => toggleSelectionOfTreeNode(n, action));
+            // console.log(rootNodes.map(getSelectedItems));
+            const selectedItems = rootNodes.map(getSelectedItems).reduce((accum, cur) => accum.concat(cur), []);
             return {
                 ...state,
-                rootNodes: state.rootNodes.map(n => toggleSelectionOfTreeNode(n, action)),
+                rootNodes,
+                selectedItems,
             };
         case FILTER_TREE_NODES:
             return {
