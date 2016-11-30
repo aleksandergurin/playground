@@ -26,7 +26,6 @@
             const opts = this.opts;
             const store = createStore(treeReducer, opts);
             store.subscribe(() => {
-                console.log(store.getState());
                 self.update({state: store.getState()})
             });
 

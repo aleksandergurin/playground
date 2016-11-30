@@ -4,14 +4,19 @@ import {
     FILTER_TREE_NODES,
 } from './actions';
 
-import * as NODE_ENUM from './enums';
+import {
+    NODE_SELECTED,
+    NODE_DESELECTED,
+    NODE_HAS_SELECTED_CHILDREN,
+    NODE_HAS_SELECTED_PARENT,
+} from './enums';
 
 export function initCollapsed(node) {
     const { children = [] } = node;
     return {
         ...node,
         collapsed: true,
-        selected: NODE_ENUM.NODE_DESELECTED,
+        selected: NODE_DESELECTED,
         children: children.map(initCollapsed),
     };
 }
@@ -46,13 +51,13 @@ export function initTreeSelection(node, selectedNodes = []) {
     function selectRecursive(n) {
         const { children = [] } = n;
         children.forEach((e) => selectRecursive(e));
-        n.selected = NODE_ENUM.NODE_HAS_SELECTED_PARENT;
+        n.selected = NODE_HAS_SELECTED_PARENT;
     }
 
     function setSelectionRecursive(n, code) {
         if (n.data && n.data.code === code) {
             selectRecursive(n);
-            n.selected = NODE_ENUM.NODE_SELECTED;
+            n.selected = NODE_SELECTED;
             return true;
         }
 
@@ -60,7 +65,7 @@ export function initTreeSelection(node, selectedNodes = []) {
 
         for (let child of children) {
             if (setSelectionRecursive(child, code)) {
-                n.selected = NODE_ENUM.NODE_HAS_SELECTED_CHILDREN;
+                n.selected = NODE_HAS_SELECTED_CHILDREN;
                 return true;
             }
         }
@@ -92,20 +97,20 @@ export function toggleSelectionOfTreeNode(node, action) {
     function toggleSelectionInner(node, nodeId) {
         // Utilitarian functions
 
-        const hasSelectedParent = ({ selected = NODE_ENUM.NODE_DESELECTED } = {}) => (
-            selected === NODE_ENUM.NODE_HAS_SELECTED_PARENT
+        const hasSelectedParent = ({ selected = NODE_DESELECTED } = {}) => (
+            selected === NODE_HAS_SELECTED_PARENT
         );
 
-        const hasSelectedChildren = ({ selected = NODE_ENUM.NODE_DESELECTED } = {}) => (
-            selected === NODE_ENUM.NODE_HAS_SELECTED_CHILDREN
+        const hasSelectedChildren = ({ selected = NODE_DESELECTED } = {}) => (
+            selected === NODE_HAS_SELECTED_CHILDREN
         );
 
-        const isDeselected = ({ selected = NODE_ENUM.NODE_DESELECTED } = {}) => (
-            selected === NODE_ENUM.NODE_DESELECTED
+        const isDeselected = ({ selected = NODE_DESELECTED } = {}) => (
+            selected === NODE_DESELECTED
         );
 
-        const isSelected = ({ selected = NODE_ENUM.NODE_DESELECTED } = {}) => (
-            selected === NODE_ENUM.NODE_SELECTED
+        const isSelected = ({ selected = NODE_DESELECTED } = {}) => (
+            selected === NODE_SELECTED
         );
 
         const setAll = (n, selected) => {
@@ -118,20 +123,20 @@ export function toggleSelectionOfTreeNode(node, action) {
 
         // This is the function that does main work.
         function toggleSelectionRecursive(curNode, id) {
-            const selected = curNode.selected || NODE_ENUM.NODE_DESELECTED;
+            const selected = curNode.selected || NODE_DESELECTED;
 
             if (curNode.data && curNode.data.id === id) {
                 switch (selected) {
-                    case NODE_ENUM.NODE_HAS_SELECTED_CHILDREN: // fallthrough
-                    case NODE_ENUM.NODE_DESELECTED:
+                    case NODE_HAS_SELECTED_CHILDREN: // fallthrough
+                    case NODE_DESELECTED:
                         return {
-                            ...setAll(curNode, NODE_ENUM.NODE_HAS_SELECTED_PARENT),
-                            selected: NODE_ENUM.NODE_SELECTED,
+                            ...setAll(curNode, NODE_HAS_SELECTED_PARENT),
+                            selected: NODE_SELECTED,
                         };
-                    case NODE_ENUM.NODE_HAS_SELECTED_PARENT: // fallthrough
-                    case NODE_ENUM.NODE_SELECTED:
+                    case NODE_HAS_SELECTED_PARENT: // fallthrough
+                    case NODE_SELECTED:
                         return {
-                            ...setAll(curNode, NODE_ENUM.NODE_DESELECTED),
+                            ...setAll(curNode, NODE_DESELECTED),
                         };
                     default:
                         return { ...curNode };
@@ -146,8 +151,8 @@ export function toggleSelectionOfTreeNode(node, action) {
                     if (curNode.data) {
                         return {
                             ...curNode,
-                            selected: NODE_ENUM.NODE_SELECTED,
-                            children: newChildren.map((n) => ({ ...n, selected: NODE_ENUM.NODE_HAS_SELECTED_PARENT })),
+                            selected: NODE_SELECTED,
+                            children: newChildren.map((n) => ({ ...n, selected: NODE_HAS_SELECTED_PARENT })),
                         };
                     }
                     // This is a special case when you have a tree
@@ -155,22 +160,22 @@ export function toggleSelectionOfTreeNode(node, action) {
                     // only a list of children elements.
                     return {
                         ...curNode,
-                        selected: NODE_ENUM.NODE_SELECTED,
+                        selected: NODE_SELECTED,
                         children: newChildren,
                     };
                 } else if (newChildren.every(isDeselected)) {
                     return {
                         ...curNode,
-                        selected: NODE_ENUM.NODE_DESELECTED,
+                        selected: NODE_DESELECTED,
                         children: newChildren,
                     };
                 } else if (newChildren.some((n) => (hasSelectedChildren(n) || isSelected(n)))) {
                     return {
                         ...curNode,
-                        selected: NODE_ENUM.NODE_HAS_SELECTED_CHILDREN,
+                        selected: NODE_HAS_SELECTED_CHILDREN,
                         children: newChildren.map((n) => {
-                            if (n.selected === NODE_ENUM.NODE_HAS_SELECTED_PARENT) {
-                                return { ...n, selected: NODE_ENUM.NODE_SELECTED };
+                            if (n.selected === NODE_HAS_SELECTED_PARENT) {
+                                return { ...n, selected: NODE_SELECTED };
                             }
                             return { ...n };
                         }),
@@ -178,10 +183,10 @@ export function toggleSelectionOfTreeNode(node, action) {
                 } else if (newChildren.some(hasSelectedParent) && newChildren.some(isDeselected)) {
                     return {
                         ...curNode,
-                        selected: NODE_ENUM.NODE_HAS_SELECTED_CHILDREN,
+                        selected: NODE_HAS_SELECTED_CHILDREN,
                         children: newChildren.map((n) => {
-                            if (n.selected === NODE_ENUM.NODE_HAS_SELECTED_PARENT) {
-                                return { ...n, selected: NODE_ENUM.NODE_SELECTED };
+                            if (n.selected === NODE_HAS_SELECTED_PARENT) {
+                                return { ...n, selected: NODE_SELECTED };
                             }
                             return { ...n };
                         }),
@@ -199,7 +204,7 @@ export function toggleSelectionOfTreeNode(node, action) {
     //     const res = [];
     //
     //     const getSelectedRecursive = (node) => {
-    //         if (node.data && node.selected === NODE_ENUM.NODE_SELECTED) {
+    //         if (node.data && node.selected === NODE_SELECTED) {
     //             res.push({
     //                 data: node.data,
     //             });
