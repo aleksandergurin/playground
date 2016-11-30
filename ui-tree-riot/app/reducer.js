@@ -227,7 +227,7 @@ export function toggleSelectionOfTreeNode(node, action) {
 const defaultComparator = () => ({ contain: true });
 
 
-export function filterTree(tree, filterData, comparator = defaultComparator) {
+export const filterTree = (comparator = defaultComparator) => (node, filterData) => {
     function filterRecursive(node, data) {
         if (node.data) {
             // data could be null for root node (which has only children elements).
@@ -253,8 +253,8 @@ export function filterTree(tree, filterData, comparator = defaultComparator) {
         return null;
     }
 
-    return filterRecursive(tree, filterData);
-}
+    return filterRecursive(node, filterData);
+};
 
 const defaultState = {
     rootNodes: [],
@@ -275,10 +275,7 @@ export function treeReducer(state = defaultState, action) {
         case FILTER_TREE_NODES:
             return {
                 ...state,
-                treeState: {
-                    ...state.treeState,
-                    filterData: action.filterData,
-                },
+                filterData: action.filterData,
             };
         default:
             return state;
