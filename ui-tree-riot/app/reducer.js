@@ -263,7 +263,6 @@ export function treeReducer(state = defaultState, action) {
             };
         case TOGGLE_SELECT_DESELECT:
             const rootNodes = state.rootNodes.map(n => toggleSelectionOfTreeNode(n, action));
-            // console.log(rootNodes.map(getSelectedItems));
             const selectedItems = rootNodes.map(getSelectedItems).reduce((accum, cur) => accum.concat(cur), []);
             return {
                 ...state,

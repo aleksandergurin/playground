@@ -1,7 +1,7 @@
 <script>
     import './debounced-input.tag';
     import './node.tag';
-    import './selected-items.tag';
+    import './selected-item.tag';
 
     import {createStore} from 'redux';
     import {
@@ -37,10 +37,12 @@
         <div if={state.selectedItems.length} class="h-mt-20 h-mb-20">
             {selectd_items_text}:
         </div>
-        <selected-items
-            items={state.selectedItems}
-            on_close={(...args) => fn.on_close(...args)}
-        ></selected-items>
+        <div each={item in state.selectedItems}>
+            <selected-item
+                item={item}
+                on_close={(...args) => fn.on_close(...args)}
+            ></selected-item>
+        </div>
     </div>
 
     <script>
@@ -50,18 +52,19 @@
             const {rootNodes = [], filterData = null} = state;
             return {
                 ...state,
-                rootNodes: rootNodes.map((n) => filter(n, filterData)).filter((n) => Boolean(n))
+                rootNodes: rootNodes.map((n) => filter(n, filterData)).filter((n) => Boolean(n)),
             };
         };
         self.state = opts.tree;
         self.input_placeholder = opts.input_placeholder;
         self.selectd_items_text = opts.selectd_items_text;
 
+        const empty = () => {};
         self.fn = {
-            on_node_click: () => {},
-            on_node_select: () => {},
-            on_change: () => {},
-            on_close: () => {},
+            on_node_click: empty,
+            on_node_select: empty,
+            on_change: empty,
+            on_close: empty,
         };
 
         self.on('mount', () => {
@@ -70,7 +73,6 @@
                 self.update({
                     state: store.getState()
                 });
-                console.log('from store', self.state.selectedItems);
             });
 
             self.fn.on_node_click = (nodeId) => store.dispatch(toggleCollapseExpand(nodeId));
