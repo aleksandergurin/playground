@@ -25,8 +25,7 @@
             const code = e.keyCode;
             if (code === 27) {  // escape key
                 self.update({text: ''});
-                // workaround
-                self.refs.inputField.value = '';
+                self.refs.inputField.value = '';  // workaround related user input
                 self.on_change('');
             }
         };

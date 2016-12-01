@@ -6,7 +6,6 @@
   "author": "Aleksander Gurin",
   "license": "ISC",
   "dependencies": {
-    "classnames": "2.2.5",
     "lodash": "4.17.2",
     "redux": "3.6.0",
     "riot": "3.0.1"

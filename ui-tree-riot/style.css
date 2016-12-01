@@ -15,15 +15,16 @@
 .b-tag__close-button {
     position: relative;
     display: inline-block;
-    margin: 0 10px 10px 0;
     padding: 3px 7px;
     background-color: #e0e6eb;
     border-radius: 2px;
 }
 
 .b-tag__close-button:before {
-    content: "x";
-    font-size: 9px;
+    content: "\2715";
+    font-size: 16px;
+    cursor: pointer;
+    color: gray;
 }
 
 .b-tree__toggle {
@@ -50,7 +51,7 @@
 }
 
 .b-tree__toggle_leaf {
-    margin-right: 31px;
+    margin-right: 36px;
 }
 
 .b-tree__toggle_leaf:before {
@@ -81,10 +82,9 @@
     position: absolute;
     top: 1px;
     left: 2px;
-    font-size: 9px;
+    font-size: 10px;
     line-height: 1;
     color: white;
-    opacity: 0;
 }
 
 .b-checkbox_type_fill {
@@ -115,7 +115,7 @@
 }
 
 .b-checkbox_type_subselect:before {
-    content: "-";
+    content: "\2714";
     opacity: 1;
 }
 
@@ -137,13 +137,13 @@
     border-left: 1px solid grey;
 }
 
-.b-tree__node:last-child:before {
+.b-tree__branch_type_last:before {
     top: 0;
     left: 6px;
-    height: 10px;
+    height: 16px;
 }
 
-.b-tree__node > .b-tree_branch:before {
+.b-tree__node > .b-tree__branch:before {
     /* horizontal line */
     content: "";
     position: absolute;
@@ -188,8 +188,7 @@
 }
 
 .b-checkbox__input:before {
-    /*@extend .glyph-yes_check:before*/
-    content: "Y";
+    color: white;
     opacity: 1;
 }
 
@@ -211,13 +210,7 @@
     border-left: 1px solid grey;
 }
 
-.b-tree__node:last-child:before {
-    top: 0;
-    left: 6px;
-    height: 10px;
-}
-
-.b-tree__node > .b-tree_branch:before {
+.b-tree__node > .b-tree__branch:before {
     /* horizontal line */
     content: "";
     position: absolute;
@@ -256,7 +249,7 @@
     display: block;
     clear: both;
     border-top: 1px solid #e6e6e6;
-    font-size: 0px;
+    font-size: 0;
 }
 
 .zk-textfield {

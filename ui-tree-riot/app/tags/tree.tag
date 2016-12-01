@@ -23,11 +23,11 @@
                 on_change={(...args) => fn.on_change(...args)}
             ></debounced-input>
 
-            <span className='b-line h-mv-20'></span>
+            <span class="b-line h-mv-20"></span>
 
             <div class="b-tree__wrapper">
-                <div class="b-tree-branch" each={node in filterRootNodes(state).rootNodes}>
-                    <node node={node}
+                <div class="b-tree__branch" each={node, i in filteredNodes}>
+                    <node node={node} last={i === (filteredNodes.length-1)}
                           on_node_click={(...args) => fn.on_node_click(...args)}
                           on_node_select={(...args) => fn.on_node_select(...args)}
                     ></node>
@@ -48,7 +48,7 @@
     <script>
         const self = this;
         const filter = filterTree(opts.comparator);
-        self.filterRootNodes = (state) => {
+        const filterRootNodes = (state) => {
             const {rootNodes = [], filterData = null} = state;
             return {
                 ...state,
@@ -56,6 +56,7 @@
             };
         };
         self.state = opts.tree;
+        self.filteredNodes = filterRootNodes(self.state).rootNodes;
         self.input_placeholder = opts.input_placeholder;
         self.selectd_items_text = opts.selectd_items_text;
 
@@ -71,7 +72,8 @@
             const store = createStore(treeReducer, self.state);
             store.subscribe(() => {
                 self.update({
-                    state: store.getState()
+                    state: store.getState(),
+                    filteredNodes: filterRootNodes(store.getState()).rootNodes,
                 });
             });
 

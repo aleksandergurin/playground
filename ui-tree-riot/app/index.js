@@ -14,7 +14,13 @@ riot.mount('cpv-tree', {
                             {
                                 data: {id: 111, code: '111', name: 'First AA'},
                                 collapsed: true,
-                                children: [],
+                                children: [
+                                    {
+                                        data: {id: 1111, code: '1111', name: 'First AAA'},
+                                        collapsed: true,
+                                        children: [],
+                                    }
+                                ],
                             }
                         ],
                     },
