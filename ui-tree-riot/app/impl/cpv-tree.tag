@@ -2,7 +2,6 @@
     import '../tags/tree.tag';
     import {comparator} from '../impl/cpv';
     import {initCollapsed} from '../utils';
-    import cpv from '../cpv.json';
 </script>
 
 <cpv-tree>
@@ -13,23 +12,28 @@
               selectd_items_text={selectd_items_text}
         ></tree>
     </div>
+    <div if={!tree.rootNodes.length}>
+        Loading...
+    </div>
 
     <script>
         const self = this;
         self.tree = {
-            rootNodes: cpv.rootNodes.map(initCollapsed),
+            rootNodes: [],
             filterData: '',
             selectedItems: [],
         };
-//        fetch('http://localhost:5000')
-//            .then(
-//                (resp) => resp.json().then(
-//                    data => self.update({tree: {...self.tree, rootNodes: data}})
-//                )
-//            )
-//            .catch(
-//                (err) => console.error(err)
-//            );
+        fetch('http://localhost:5000')
+            .then(
+                (resp) => resp.json().then(
+                    data => {
+                        self.update({tree: {...self.tree, rootNodes: data.rootNodes.map(initCollapsed)}});
+                    }
+                )
+            )
+            .catch(
+                (err) => console.error(err)
+            );
         self.comparator = comparator;
         self.input_placeholder = opts.input_placeholder;
         self.selectd_items_text = opts.selected_items_text;
