@@ -28,6 +28,16 @@ module.exports = {
                 exclude: /node_modules/,
                 loader: 'babel-loader',
             },
+            {
+                test: /\.json$/,
+                loader: 'json',
+            }
         ]
+    },
+
+    devServer: {
+        headers: {
+            "Access-Control-Allow-Origin": "*",
+        }
     }
 };

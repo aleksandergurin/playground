@@ -9,8 +9,10 @@ export function comparator(dataItem, userInput) {
     }
 
     if (typeof userInput !== 'string' || typeof dataItem.name !== 'string') {
+        console.log(typeof(userInput));
+        console.log(dataItem);
         console.error('Incorrect type of argument');
-        return {...res, contain: true}
+        return {...res, contain: false}
     }
 
     const inputIsCode = (input) => CPV_CODE_RE.test(input);
