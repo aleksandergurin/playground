@@ -77,10 +77,10 @@
                 });
             });
 
-            self.fn.on_node_click = (nodeId) => store.dispatch(toggleCollapseExpand(nodeId));
-            self.fn.on_node_select = (nodeId) => store.dispatch(toggleSelectDeselect(nodeId));
+            self.fn.on_node_click = (code) => store.dispatch(toggleCollapseExpand(code));
+            self.fn.on_node_select = (code) => store.dispatch(toggleSelectDeselect(code));
             self.fn.on_change = (text) => store.dispatch(changeFilterData(text));
-            self.fn.on_close = (nodeId) => store.dispatch(toggleSelectDeselect(nodeId));
+            self.fn.on_close = (code) => store.dispatch(toggleSelectDeselect(code));
         });
     </script>
 </tree>

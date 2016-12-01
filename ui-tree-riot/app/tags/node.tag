@@ -56,11 +56,11 @@
     <div class="b-tree__node {b-tree__branch_type_last: opts.last}">
         <div class="b-tree__node-wrapper">
             <span class="{b-tree__toggle: !isLeaf} {b-tree__toggle_state_expanded: !isLeaf && !node.collapsed} {b-tree__toggle_leaf: isLeaf}"
-                  onclick={() => on_node_click(node.data.id)}></span>
+                  onclick={() => on_node_click(node.data.code)}></span>
             <label class="b-checkbox__label b-tree__list-item-label">
                 <span class="b-tree__node-checkbox-wrapper">
                     <input class="b-checkbox__input" type="checkbox" ref="checkboxField"
-                           onchange={() => on_node_select(node.data.id)}>
+                           onchange={() => on_node_select(node.data.code)}>
                     <span class="b-checkbox__checkbox-fake {b-checkbox_type_fill: hasSelectedChildren} {b-checkbox_type_subselect: hasSelectedParent}"></span>
                 </span>
                 <span class="b-tree__node-content">

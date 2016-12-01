@@ -4,15 +4,15 @@ export const TOGGLE_SELECT_DESELECT = 'TOGGLE_SELECT_DESELECT';
 export const FILTER_TREE_NODES = 'FILTER_TREE_NODES';
 
 
-export const toggleCollapseExpand = (nodeId) => ({
+export const toggleCollapseExpand = (code) => ({
     type: TOGGLE_COLLAPSE_EXPAND,
-    nodeId,
+    code,
 });
 
 
-export const toggleSelectDeselect = (nodeId) => ({
+export const toggleSelectDeselect = (code) => ({
     type: TOGGLE_SELECT_DESELECT,
-    nodeId,
+    code,
 });
 
 

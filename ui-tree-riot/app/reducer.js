@@ -79,23 +79,21 @@ export function initTreeSelection(node, selectedNodes = []) {
 
 
 export function toggleCollapseTreeNode(rootNode, action) {
-    function collapseRecursive(node, nodeId) {
+    function collapseRecursive(node, code) {
         const { children = [] } = node;
 
         return {
             ...node,
-            collapsed: (node.data && nodeId === node.data.id) ? !node.collapsed : node.collapsed,
-            children: children.map((n) => collapseRecursive(n, nodeId)),
+            collapsed: (node.data && code === node.data.code) ? !node.collapsed : node.collapsed,
+            children: children.map((n) => collapseRecursive(n, code)),
         };
     }
 
-    return collapseRecursive(rootNode, action.nodeId);
+    return collapseRecursive(rootNode, action.code);
 }
 
 
 export function toggleSelectionOfTreeNode(node, action) {
-    const nodeId = action.nodeId;
-
     // Utilitarian functions
     const hasSelectedParent = ({ selected = NODE_DESELECTED } = {}) => (
         selected === NODE_HAS_SELECTED_PARENT
@@ -122,10 +120,10 @@ export function toggleSelectionOfTreeNode(node, action) {
     };
 
     // This is the function that does main work.
-    function toggleSelectionRecursive(curNode, id) {
+    function toggleSelectionRecursive(curNode, code) {
         const selected = curNode.selected || NODE_DESELECTED;
 
-        if (curNode.data && curNode.data.id === id) {
+        if (curNode.data && curNode.data.code === code) {
             switch (selected) {
                 case NODE_HAS_SELECTED_CHILDREN: // fallthrough
                 case NODE_DESELECTED:
@@ -144,7 +142,7 @@ export function toggleSelectionOfTreeNode(node, action) {
         }
 
         const { children = [] } = curNode;
-        const newChildren = children.map((n) => toggleSelectionRecursive(n, nodeId));
+        const newChildren = children.map((n) => toggleSelectionRecursive(n, code));
 
         if (newChildren.length > 0) {
             if (newChildren.every(isSelected)) {
@@ -197,7 +195,7 @@ export function toggleSelectionOfTreeNode(node, action) {
         return { ...curNode, children: newChildren };
     }
 
-    return { ...toggleSelectionRecursive(node, nodeId) };
+    return { ...toggleSelectionRecursive(node, action.code) };
 }
 
 function getSelectedItems(node) {
