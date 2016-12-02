@@ -22,10 +22,10 @@
     background: #fff;
     border-radius: 5px;
     width: 700px;
-    min-height: 500px;
+    min-height: 450px;
     position: relative;
     line-height: 17px;
-    font-size: 10px;
+    font-size: 12px;
 }
 
 .b-tree__modal .b-tree__modal-close {

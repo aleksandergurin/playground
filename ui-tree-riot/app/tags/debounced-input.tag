@@ -9,7 +9,7 @@
             ref="inputField"
             placeholder={placeholder}
             value={text}
-            onkeyup={handleEscapeKey}
+            onkeydown={handleEscapeKey}
             oninput={handleChange}
     >
 
@@ -22,10 +22,10 @@
         self.debouncedInput = debounce((text) => self.on_change(text), 400);
 
         self.handleEscapeKey = (e) => {
-            const code = e.keyCode;
-            if (code === 27) {  // escape key
+            if (e.keyCode === 27) {  // escape key
                 self.update({text: ''});
                 self.refs.inputField.value = '';  // workaround related user input
+                e.preventDefault();
                 self.on_change('');
             }
         };

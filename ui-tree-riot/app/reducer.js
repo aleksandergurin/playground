@@ -203,9 +203,7 @@ function getSelectedItems(node) {
 
     const getSelectedRecursive = (node) => {
         if (node.data && node.selected === NODE_SELECTED) {
-            res.push({
-                data: node.data,
-            });
+            res.push(node.data);
         } else {
             const { children = [] } = node;
             children.forEach(getSelectedRecursive);

@@ -1,7 +1,11 @@
 <script>
     import '../tags/tree.tag';
     import {comparator} from '../impl/cpv';
-    import {initCollapsed} from '../utils';
+    import {
+        parseSelectedItems,
+        initCollapsed,
+        initSelection,
+    } from '../utils';
 </script>
 
 <cpv-tree>
@@ -34,22 +38,25 @@
         self.tree = {
             rootNodes: [],
             filterData: '',
+//            selectedItems: parseSelectedItems(opts.selected_items),
             selectedItems: [],
         };
         self.comparator = comparator;
 
         self.onclick = () => {
-            if (self.tree.rootNodes.length) {
-                return;
-            } else {
+            if (!self.tree.rootNodes.length) {
                 fetch('http://localhost:5000')
                     .then(
                         (resp) => resp.json().then(
                             data => {
+                                const rootNodes = data.rootNodes.map(initCollapsed);
+                                // call of initSelection has side-effects on rootNodes
+                                const selectedItems = initSelection(rootNodes, self.tree.selectedItems);
                                 self.update({
                                     tree: {
                                         ...self.tree,
-                                        rootNodes: data.rootNodes.map(initCollapsed)
+                                        rootNodes,
+                                        selectedItems,
                                     }
                                 });
                             }
