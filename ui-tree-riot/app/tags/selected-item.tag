@@ -1,12 +1,12 @@
 
 <selected-item>
-    <div class="b-tag">
+    <span class="b-tag">
         <span class="b-tag__text">
             <b>{item.data.code}</b> - {item.data.name}
         </span>
         <span class="b-tag__close-button" onclick={onclick}></span>
         <input type="hidden" name="primary_classifier_code" value={item.data.code}>
-    </div>
+    </span>
 
     <script>
         const self = this;

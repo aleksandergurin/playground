@@ -9,8 +9,6 @@ export function comparator(dataItem, userInput) {
     }
 
     if (typeof userInput !== 'string' || typeof dataItem.name !== 'string') {
-        console.log(typeof(userInput));
-        console.log(dataItem);
         console.error('Incorrect type of argument');
         return {...res, contain: false}
     }

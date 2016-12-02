@@ -4,11 +4,17 @@
     <meta charset="UTF-8">
     <title>Riot skeleton project</title>
     <link rel="stylesheet" href="style.css">
+    <style>
+        body {
+            font-family: sans-serif, serif;
+        }
+    </style>
 </head>
 <body>
     <cpv-tree
+            link_text="CPV-код"
+            modal_header_text="Классификатор CPV"
             input_placeholder="Найти"
-            selected_items_text="Выбранные категории"
     ></cpv-tree>
     <script src="build/bundle.js" charset="utf-8"></script>
 </body>

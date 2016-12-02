@@ -34,14 +34,14 @@
                 </div>
             </div>
         </div>
-        <div if={state.selectedItems.length} class="h-mt-20 h-mb-20">
-            {selectd_items_text}:
-        </div>
-        <div each={item in state.selectedItems}>
-            <selected-item
-                item={item}
-                on_close={(...args) => fn.on_close(...args)}
-            ></selected-item>
+
+        <div class="h-mt-20">
+            <virtual each={item in state.selectedItems}>
+                <selected-item
+                    item={item}
+                    on_close={(...args) => fn.on_close(...args)}
+                ></selected-item>
+            </virtual>
         </div>
     </div>
 

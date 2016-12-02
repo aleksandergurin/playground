@@ -1,3 +1,46 @@
+/* Modal window styling */
+
+.b-tree__overlay {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: rgba(0, 0, 0, 0.7);
+    visibility: hidden;
+    opacity: 0;
+}
+
+.b-tree__overlay:target {
+    visibility: visible;
+    opacity: 1;
+}
+
+.b-tree__modal {
+    margin: 150px auto;
+    padding: 20px;
+    background: #fff;
+    border-radius: 5px;
+    width: 700px;
+    min-height: 500px;
+    position: relative;
+    line-height: 17px;
+    font-size: 10px;
+}
+
+.b-tree__modal .b-tree__modal-close {
+    position: absolute;
+    top: 20px;
+    right: 30px;
+    font-size: 30px;
+    font-weight: bold;
+    text-decoration: none;
+    color: #333;
+}
+
+
+/* Tree styling */
+
 .b-tag {
     position: relative;
     display: inline-block;
@@ -123,7 +166,7 @@
     position: relative;
     padding-left: 25px;
     margin-top: 5px;
-    margin-left: 3px;
+    margin-left: 2px;
 }
 
 .b-tree__node:before {
