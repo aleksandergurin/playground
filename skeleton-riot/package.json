@@ -5,6 +5,9 @@
     "main": "app/index.js",
     "author": "Aleksander Gurin",
     "license": "ISC",
+    "scripts": {
+        "dev": "webpack-dev-server"
+    },
     "devDependencies": {
         "babel": "6.5.2",
         "babel-core": "6.18.2",
