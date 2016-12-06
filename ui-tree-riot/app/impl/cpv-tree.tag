@@ -38,18 +38,17 @@
         self.tree = {
             rootNodes: [],
             filterData: '',
-//            selectedItems: parseSelectedItems(opts.selected_items),
             selectedItems: [],
         };
         self.comparator = comparator;
 
         self.onclick = () => {
             if (!self.tree.rootNodes.length) {
-                fetch('http://localhost:5000')
+                fetch('http://localhost:3000/rootNodes')
                     .then(
                         (resp) => resp.json().then(
                             data => {
-                                const rootNodes = data.rootNodes.map(initCollapsed);
+                                const rootNodes = data.map(initCollapsed);
                                 // call of initSelection has side-effects on rootNodes
                                 const selectedItems = initSelection(rootNodes, self.tree.selectedItems);
                                 self.update({

@@ -7,33 +7,22 @@
             type="text"
             class="zk-textfield"
             ref="inputField"
-            placeholder={placeholder}
-            value={text}
+            placeholder={opts.placeholder}
             onkeydown={handleEscapeKey}
             oninput={handleChange}
     >
 
-    <script>
-        const self = this;
+    this.debounceInput = debounce((text) => opts.on_change(text), 400);
 
-        self.text = '';
-        self.placeholder = opts.placeholder;
-        self.on_change = opts.on_change;
-        self.debouncedInput = debounce((text) => self.on_change(text), 400);
+    handleEscapeKey(e) {
+        if (e.keyCode === 27) {  // escape key
+            this.refs.inputField.value = '';  // workaround related user input
+            e.preventDefault();
+            opts.on_change('');
+        }
+    }
 
-        self.handleEscapeKey = (e) => {
-            if (e.keyCode === 27) {  // escape key
-                self.update({text: ''});
-                self.refs.inputField.value = '';  // workaround related user input
-                e.preventDefault();
-                self.on_change('');
-            }
-        };
-
-        self.handleChange = (e) => {
-            const text = e.target.value;
-            this.update({text});
-            self.debouncedInput(text);
-        };
-    </script>
+    handleChange(e) {
+        this.debounceInput(e.target.value);
+    }
 </debounced-input>
