@@ -9,6 +9,8 @@ module.exports = {
         filename: 'bundle.js',
     },
 
+    devtool: "source-map",
+
     plugins: [
         new webpack.ProvidePlugin({riot: 'riot'}),
     ],

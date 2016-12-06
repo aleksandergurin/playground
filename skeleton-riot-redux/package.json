@@ -1,7 +1,7 @@
 {
     "name": "skeleton-riot",
     "version": "1.0.0",
-    "description": "Riot skeleton project",
+    "description": "Riot + Redux skeleton project",
     "main": "app/index.js",
     "author": "Aleksander Gurin",
     "license": "ISC",
@@ -15,9 +15,12 @@
         "babel-preset-es2015": "6.18.0",
         "babel-preset-stage-2": "6.18.0",
         "babel-preset-es2015-riot": "1.1.0",
-        "riot": "3.0.1",
         "riotjs-loader": "3.0.0",
         "webpack": "1.13.3",
         "webpack-dev-server": "1.16.2"
+    },
+    "dependencies": {
+        "redux": "3.6.0",
+        "riot": "3.0.2"
     }
 }
