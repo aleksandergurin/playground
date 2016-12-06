@@ -28,16 +28,16 @@
     </span>
 
     <script>
-        const {data, util = {}} = opts;
         const self = this;
 
         self.markCode = false;
         self.markName = false;
-        self.code = data.code;
-        self.name = data.name;
+        self.code = opts.data.code;
+        self.name = opts.data.name;
 
-        const {markCodeStart, markCodeEnd} = util;
-        const {markNameStart, markNameEnd} = util;
+        const {markCodeStart, markCodeEnd} = opts.util || {};
+        const {markNameStart, markNameEnd} = opts.util || {};
+
         if (Number.isInteger(markCodeStart) && Number.isInteger(markCodeEnd)) {
             self.markCode = true;
             self.markCodeStart = markCodeStart;

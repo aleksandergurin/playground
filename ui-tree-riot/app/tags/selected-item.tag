@@ -2,16 +2,14 @@
 <selected-item>
     <span class="b-tag">
         <span class="b-tag__text">
-            <b>{item.code}</b> - {item.name}
+            <b>{opts.item.code}</b> - {opts.item.name}
         </span>
         <span class="b-tag__close-button" onclick={onclick}></span>
-        <input type="hidden" name="primary_classifier_code" value={item.code}>
+
+        <input type="hidden" name="primary_classifier_code" value={opts.item.code}>
     </span>
 
-    <script>
-        const self = this;
-        self.item = opts.item;
-        const on_close = opts.on_close;
-        self.onclick = () => on_close(self.item.code);
-    </script>
+    onclick(e) {
+        opts.on_close(opts.item.code);
+    }
 </selected-item>
