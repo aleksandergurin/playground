@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Document</title>
+</head>
+<body>
+
+    <p class="js-copy-area">Example text.</p>
+
+    <script>
+        const copyArea = document.querySelector('.js-copy-area');
+        copyArea.addEventListener('click', function (event) {
+            const range = document.createRange();
+            const selection = window.getSelection();
+            range.selectNodeContents(copyArea);
+
+            selection.removeAllRanges();
+            selection.addRange(range);
+
+            try {
+                const successful = document.execCommand('copy');
+                const msg = successful ? 'successful' : 'unsuccessful';
+                console.info(`Copying to clipboard was ${msg}`);
+            } catch (err) {
+                console.error('Unable to copy to clipboard');
+            } finally {
+                selection.removeAllRanges();
+            }
+        });
+    </script>
+</body>
+</html>
