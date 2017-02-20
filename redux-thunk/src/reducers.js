@@ -1,17 +1,30 @@
 import {
-    REQUEST_POSTS, RECEIVE_POSTS
+    REQUEST_POSTS, RECEIVE_POSTS, FETCHING_ERROR,
 } from './actions';
 
 export const reducer = (state = {}, action = {}) => {
     switch (action.type) {
         case REQUEST_POSTS: {
-            return state;
+            return {
+                ...state,
+                isFetching: true,
+            };
         }
         case RECEIVE_POSTS: {
-            console.log(state, action);
+            const { posts = [] } = action;
             return {
-                posts: action.posts,
-            }
+                ...state,
+                isFetching: false,
+                error: false,
+                posts,
+            };
+        }
+        case FETCHING_ERROR: {
+            return {
+                ...state,
+                isFetching: false,
+                error: true,
+            };
         }
         default:
             return state;

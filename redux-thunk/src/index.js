@@ -8,6 +8,10 @@ import {App} from './App';
 
 const store = createStore(
     reducer,
+    {
+        isFetching: false,
+        posts: [],
+    },
     applyMiddleware(thunk)
 );
 
@@ -15,7 +19,7 @@ const store = createStore(
 const render = () => ReactDOM.render(
     <App
         dispatch={store.dispatch}
-        posts={store.getState().posts}
+        state={store.getState()}
     />,
     document.getElementById('root')
 );

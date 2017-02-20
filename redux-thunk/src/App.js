@@ -3,14 +3,20 @@ import {fetchPosts} from './actions';
 
 
 export function App(props) {
-    const {posts, dispatch} = props;
+    const {state, dispatch} = props;
+    const info = () => (
+        <p>{ state.isFetching ? '...Loading' :
+            state.error ? 'Error. Try again later.' :
+                'Click "Fetch data"'}
+        </p>
+    );
     return (
         <div>
-            {!posts.length ?
-                <p>Click "Fetch data".</p> :
-
+            {!state.posts.length ?
+                info()
+                :
                 <ul>
-                    {posts.map(i => <li key={i.id}>{i.title}</li>)}
+                    {state.posts.map(i => <li key={i.id}>{i.title}</li>)}
                 </ul>
             }
             <button
@@ -24,9 +30,6 @@ export function App(props) {
 }
 
 App.propTypes = {
-    posts: PropTypes.array,
+    state: PropTypes.object.isRequired,
     dispatch: PropTypes.func.isRequired,
-};
-App.defaultProps = {
-    posts: [],
 };
