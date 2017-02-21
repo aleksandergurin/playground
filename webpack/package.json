@@ -1,0 +1,12 @@
+{
+  "name": "webpack-example",
+  "version": "1.0.0",
+  "description": "Webpack example project",
+  "main": "index.js",
+  "author": "Aleksander Gurin",
+  "devDependencies": {
+    "babel-core": "^6.23.1",
+    "babel-loader": "^6.3.2",
+    "webpack": "^2.2.1"
+  }
+}
