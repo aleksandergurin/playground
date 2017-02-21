@@ -30,6 +30,5 @@ export const fetchPosts = reddit => dispatch => {
             throw new Error('Network error');
         })
         .then(json => dispatch(receivePosts(reddit, json)))
-        .catch(error => dispatch(fetchingError())) ;
-}
-;
+        .catch(error => dispatch(fetchingError()));
+};
