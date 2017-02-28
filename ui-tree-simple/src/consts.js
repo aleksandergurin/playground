@@ -1,0 +1,3 @@
+export const SELECTED = 'SELECTED';
+export const HAS_SELECTED_CHILDREN = 'HAS_SELECTED_CHILDREN';
+export const DESELECTED = 'DESELECTED';
