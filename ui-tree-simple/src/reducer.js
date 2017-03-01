@@ -55,18 +55,22 @@ function propagateSelectionToParent(node, newSelectionState, tree) {
         case SELECTED: {
             if (parentNode.selectionState === DESELECTED) {
                 parentNode.selectionState = HAS_SELECTED_CHILDREN;
+                needPropagateFurther = true;
             }
             // if parentNode selected or has selected children do nothing
             break;
         }
         case DESELECTED: {
-            // todo: implement
             if (parentNode.selectionState === HAS_SELECTED_CHILDREN) {
                 const {children = []} = parentNode;
-                if (children.some(nodeId => isNodeHasSelectedChildren(tree[nodeId]))) {
+                if (
+                    children.some(nodeId => isNodeHasSelectedChildren(tree[nodeId]))
+                ) {
                     parentNode.selectionState = HAS_SELECTED_CHILDREN;
+                } else {
+                    parentNode.selectionState = DESELECTED;
+                    needPropagateFurther = true;
                 }
-                parentNode.selectionState = DESELECTED;
             }
             // if parentNode deselected or selected do nothing
             break;
@@ -74,6 +78,7 @@ function propagateSelectionToParent(node, newSelectionState, tree) {
         case HAS_SELECTED_CHILDREN: {
             if (parentNode.selectionState === DESELECTED) {
                 parentNode.selectionState = HAS_SELECTED_CHILDREN;
+                needPropagateFurther = true;
             }
             // if parentNode selected or has selected children do nothing
             break;
@@ -82,7 +87,11 @@ function propagateSelectionToParent(node, newSelectionState, tree) {
             throw new Error('Incorrect tree structure');
     }
 
-    // todo: propagate to parent of parent
+    if (needPropagateFurther) {
+        propagateSelectionToParent(
+            parentNode, parentNode.selectionState, tree
+        );
+    }
 }
 
 
