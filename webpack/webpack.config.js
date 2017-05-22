@@ -1,19 +1,20 @@
+const {resolve}  = require('path');
 
-module.exports = {
-    entry: "./src/index.js",
+module.exports = env => ({
+    entry: './src/index.js',
     output: {
-        path: "build/",
-        filename: "bundle.js",
+        path: resolve(__dirname, 'build'),
+        filename: 'bundle.js',
     },
-    devtool: "source-map",
+    devtool: 'source-map',
     watch: true,
     module: {
         loaders: [
             {
                 test: /\.js$/,
-                exclude: /node_modules/,
                 loader: 'babel-loader',
+                exclude: /node_modules/,
             }
         ]
     }
-};
+});
